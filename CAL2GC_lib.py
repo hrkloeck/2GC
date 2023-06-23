@@ -304,11 +304,31 @@ def get_imagestats(imagename,homedir):
     
     # open the fits file
     #
-    hdu_list         = fits.open(imageandpath) 
+    hdu_list       = fits.open(imageandpath) 
     im_data        = hdu_list[0].data
     im_data_header = hdu_list[0].header
 
     return im_data.mean(),im_data.std(),im_data.min(),im_data.max(),im_data_header['BUNIT']
+
+
+def sum_imageflux(imagename,homedir,threshold=0):
+    """
+    return the integrated flux above the threshold 
+    """
+    from astropy.io import fits
+    
+    imageandpath = homedir+imagename
+    
+    # open the fits file
+    #
+    hdu_list       = fits.open(imageandpath) 
+    im_data        = hdu_list[0].data
+    im_data_header = hdu_list[0].header
+
+    selthreshold = im_data > threshold
+
+    return np.sum(im_data[selthreshold]),im_data_header['BUNIT']
+
 
 
 def get_some_info(MSFILE,homedir):

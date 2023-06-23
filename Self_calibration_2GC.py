@@ -91,7 +91,6 @@ selfcal_addcommand   = ['','','','']  # add additional wsclean commands
 #
 # ===========================
 
-
 #
 # Input for the final imaging
 #
@@ -106,6 +105,8 @@ fim_mgain     = 0.8
 #
 # ===========================
 
+# cleaning up 
+#
 dodelmaskimages = True   # If True, deletes the images from which the mask has been produced
 
 # ============================================================================================================
@@ -139,6 +140,10 @@ if doapply_precal:
 
 
 
+
+# ============================================================================================================
+#  DO NOT EDIT BOYOND UNLESS YOU KNOW WHAT YOU ARE DOING
+# ============================================================================================================
 
 
 # ============================================================================================================
@@ -199,8 +204,13 @@ if do_selfcal:
         stats_image    = outname+'-MFS-residual.fits'
         selfcal_information['SC'+str(sc)]['Stats'] = get_imagestats(stats_image,homedir)
 
+        # provide the entire flux density of the model
+        #
+        stats_image    = outname+'-MFS-model.fits'
+        selfcal_information['SC'+str(sc)]['Model'] = [sum_imageflux(stats_image,homedir,threshold=0)]
 
         # need to clean up the images
+        #
         scdir = 'SC_'+str(sc_marker)+'_MODEL'+'/'
         os.mkdir(homedir+scdir)
         get_files = glob.glob(homedir+outname+'*')
