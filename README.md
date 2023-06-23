@@ -18,7 +18,9 @@ Having this in mind we expect 16 spwd being present in the dataset.
 
 4. Edit the IMAGING_SELFCAL.py file      # THIS WILL CHANGE IN THE FUTURE
 
-Start the singularity (important with bind)
+Start the singularity (important with bind) 
+
+use HRK_CASA_6.5_DASK_WSC3.3.simg
 
 singularity exec --bind ${PWD}:/data CONTAINER.simg python /data/IMAGING_SELFCAL.py
 
