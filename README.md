@@ -11,11 +11,12 @@ Having this in mind we expect 16 spwd being present in the dataset.
 1. Prepare the working directory
 
     git clone https://github.com/JonahDW/Image-processing.git
+   
     git clone https://github.com/hrkloeck/DASKMSWERKZEUGKASTEN.git
 
-2. copy your MS file into the directory
+3. copy your MS file into the directory
 
-3. Edit the IMAGING_SELFCAL.py file      # THIS WILL CHANGE IN THE FUTURE
+4. Edit the IMAGING_SELFCAL.py file      # THIS WILL CHANGE IN THE FUTURE
 
 Start the singularity (important with bind)
 
