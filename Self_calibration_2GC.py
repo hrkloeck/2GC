@@ -51,7 +51,7 @@ from CAL2GC_lib import *
 #
 # Start the singularity (important with bind)
 #
-# singularity exec --bind ${PWD}:/data CONTAINER.simg python /data/IMAGING_SELFCAL.py
+# singularity exec --bind ${PWD}:/data CONTAINER.simg python /data/Self_calibration_2GC.py
 #
 # =========================================
 
@@ -294,14 +294,26 @@ if dofinal_image:
     selfcal_information['FINALIMAGE'] = {}
     selfcal_information['FINALIMAGE']['Stats'] = get_imagestats(stats_image,homedir)
 
+    # Generate a source finding
+    #
+    final_image    = outname+'-MFS-image.fits'
+    cata_dir,final_tot_flux_model,final_std_resi  = cataloging_file(final_image,homedir)
+
+    # here we collect information on the model, the noise etc.
+    #
+    selfcal_information['FINALIMAGE']['pybdfs_info'] = [final_tot_flux_model,final_std_resi]
+
     # need to clean up the images
+    #
     scdir = 'FINAL_SC'+str(len(selfcal_modes))+'_IMAGES'+'/'
     os.mkdir(homedir+scdir)
     get_files = glob.glob(homedir+outname+'*')
     for im in get_files:
         shutil.move(im,homedir+scdir)
-
-
+    
+    # move datalogue directory 
+    #
+    shutil.move(cata_dir,homedir+scdir)
 
     self_cal_info = 'FINAL_SC_IMAGE_'+source_name+'_SELFCALINFO.json'
     if len(self_cal_info) > 0:

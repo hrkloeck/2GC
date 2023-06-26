@@ -75,10 +75,10 @@ def make_region_file(imagename,homedir=''):
 
     # optain information of the total flux density of the model
     #
-    info = os.popen('grep "Total flux density in model" '+homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log')
+    info    = os.popen('grep "Total flux density in model" '+homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log')
     getinfo = info.read().split()
     info.close()
-    idx_jy = getinfo.index('Jy')
+    idx_jy         = getinfo.index('Jy')
     tot_flux_model = getinfo[idx_jy-1]
 
     # optain information of the total flux density of the model
@@ -90,6 +90,41 @@ def make_region_file(imagename,homedir=''):
     std_resi = stdgetinfo[idx_std-1]
 
     return pybdsf_dir, imagename.replace('.fits','').replace('.FITS','')+'_mask.crtf', eval(tot_flux_model), eval(std_resi)
+
+
+def cataloging_file(imagename,homedir=''):
+    """
+    uses pybdfs and Jonah's source finding
+    """
+
+    filename       = homedir + imagename
+    sfinding_dir   = homedir + imagename.replace('.fits','').replace('.FITS','')
+    pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
+    source_finding = 'python ' + homedir + 'Image-processing/sourcefinding.py cataloging ' + filename + ' -o fits:srl kvis --plot'
+
+    # start the source finding stuff from Jonah
+    # using the mask setting
+    #
+    os.system(source_finding)
+
+    # optain information of the total flux density of the model
+    #
+    info    = os.popen('grep "Total flux density in model" '+homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log')
+    getinfo = info.read().split()
+    info.close()
+    idx_jy         = getinfo.index('Jy')
+    tot_flux_model = getinfo[idx_jy-1]
+
+    # optain information of the total flux density of the model
+    #
+    stdinfo = os.popen('grep "std. dev:" '+homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log')
+    stdgetinfo = stdinfo.read().split()
+    stdinfo.close()
+    idx_std  = stdgetinfo.index('(Jy/beam)')
+    std_resi = stdgetinfo[idx_std-1]
+
+    return pybdsf_dir, eval(tot_flux_model), eval(std_resi)
+
 
 
 
