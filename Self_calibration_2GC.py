@@ -170,6 +170,9 @@ if doapply_precal:
 
 selfcal_information  = {}
 
+# Get the source_name
+source_name   = list(get_some_info(MSFILE,homedir))[0]
+
 # ============================================================================================================
 # =========  S E L F - C A L I B R A T I O N process starts here 
 # ============================================================================================================
@@ -185,10 +188,8 @@ if do_selfcal:
     #
     delmodel(MSFILE,homedir)
 
-
-    # Get the source_name
-    source_name   = list(get_some_info(MSFILE,homedir))[0]
-
+    # essential for applying calibration in CASA
+    #
     addgaintable, addinterp = [],[]
 
     for sc in range(len(selfcal_modes)):
