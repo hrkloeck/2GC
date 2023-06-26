@@ -142,7 +142,7 @@ def make_image(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=1,niter
 
     # Hardcoded stuff for the S-Band comissioning
     #
-    if spwd == -1:
+    if spwds == -1:
             spwds     = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
     if chan_out == -1:
         chan_out  = 16
