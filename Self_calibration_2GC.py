@@ -50,7 +50,7 @@ from CAL2GC_lib import *
 #
 # 3. copy your MS file into the directory
 #
-# 4. Edit the IMAGING_SELFCAL.py file      # THIS WILL CHANGE IN THE FUTURE
+# 4. Edit the Self_calibration_2GC.py file      # THIS WILL CHANGE IN THE FUTURE
 #
 # Start the singularity (important with bind)
 #
