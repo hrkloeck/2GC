@@ -89,7 +89,7 @@ selfcal_interp       = ['linear','linear','linear','linear']
 selfcal_niter        = [30000,30000,30000,30000]
 selfcal_mgain        = [0.8,0.8,0.8,0.8]
 selfcal_data         = ['DATA','CORRECTED_DATA','CORRECTED_DATA','CORRECTED_DATA']
-selfcal_usemaskfile  = ['','','','']  # use the mask file you define from previous runs 
+selfcal_usemaskfile  = ['','','','']  # use the mask file determined by hand from previous runs 
 selfcal_addcommand   = ['','','','']  # add additional wsclean commands 
 #
 # ===========================
@@ -97,14 +97,15 @@ selfcal_addcommand   = ['','','','']  # add additional wsclean commands
 #
 # Input for the final imaging
 #
-outname       = 'FINAL_SC_IMAGE'
-fim_weighting = -0.5
-fim_imsize    = 1024
-fim_bin_size  = 0.7
+outname             = 'FINAL_SC_IMAGE'
+fim_weighting       = -0.5
+fim_imsize          = 1024
+fim_bin_size        = 0.7
 #
-fim_niter     = 300000
-fim_data      = 'CORRECTED_DATA'
-fim_mgain     = 0.8
+fim_niter           = 300000
+fim_data            = 'CORRECTED_DATA'
+fim_mgain           = 0.8
+fim_imagedir_ext    = ''             # additional extension of the final directory 
 #
 # ===========================
 
@@ -325,7 +326,7 @@ if dofinal_image:
 
     # need to clean up the images
     #
-    scdir = 'FINAL_SC'+str(len(selfcal_modes))+'_IMAGES'+'/'
+    scdir = 'FINAL_SC'+str(len(selfcal_modes))+'_IMAGES'+fim_imagedir_ext+'/'
     os.mkdir(homedir+scdir)
     get_files = glob.glob(homedir+outname+'*')
     for im in get_files:
@@ -336,7 +337,7 @@ if dofinal_image:
 # =========  S A V E  I N F O R M A T I O N 
 # ============================================================================================================
 #
-self_cal_info = 'FINAL_SC_IMAGE_'+source_name+'_SELFCALINFO.json'
+self_cal_info = 'FINAL_SC_IMAGE_'+source_name+'_SELFCALINFO'+fim_imagedir_ext+'.json'
 if len(self_cal_info) > 0:
     save_to_json(selfcal_information,self_cal_info,homedir)
 
