@@ -44,6 +44,7 @@ from CAL2GC_lib import *
 #
 #    git clone https://github.com/JonahDW/Image-processing.git
 #    git clone https://github.com/hrkloeck/DASKMSWERKZEUGKASTEN.git
+#    git clone https://github.com/hrkloeck/2GC.git
 #
 # 2. copy your MS file into the directory
 #
@@ -310,14 +311,14 @@ if dofinal_image:
     get_files = glob.glob(homedir+outname+'*')
     for im in get_files:
         shutil.move(im,homedir+scdir)
-    
-    # move datalogue directory 
-    #
-    shutil.move(cata_dir,homedir+scdir)
+     
 
-    self_cal_info = 'FINAL_SC_IMAGE_'+source_name+'_SELFCALINFO.json'
-    if len(self_cal_info) > 0:
-        save_to_json(selfcal_information,self_cal_info,homedir)
-
+# ============================================================================================================
+# =========  S A V E  I N F O R M A T I O N 
+# ============================================================================================================
+#
+self_cal_info = 'FINAL_SC_IMAGE_'+source_name+'_SELFCALINFO.json'
+if len(self_cal_info) > 0:
+    save_to_json(selfcal_information,self_cal_info,homedir)
 
 print('finish !')
