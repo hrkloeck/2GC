@@ -45,10 +45,12 @@ from CAL2GC_lib import *
 #    git clone https://github.com/JonahDW/Image-processing.git
 #    git clone https://github.com/hrkloeck/DASKMSWERKZEUGKASTEN.git
 #    git clone https://github.com/hrkloeck/2GC.git
+# 
+# 2. copy the script  cp 2GC/*py .
 #
-# 2. copy your MS file into the directory
+# 3. copy your MS file into the directory
 #
-# 3. Edit the IMAGING_SELFCAL.py file      # THIS WILL CHANGE IN THE FUTURE
+# 4. Edit the IMAGING_SELFCAL.py file      # THIS WILL CHANGE IN THE FUTURE
 #
 # Start the singularity (important with bind)
 #
@@ -96,7 +98,7 @@ selfcal_addcommand   = ['','','','']  # add additional wsclean commands
 # Input for the final imaging
 #
 outname       = 'FINAL_SC_IMAGE'
-fim_weighting =-0.5
+fim_weighting = -0.5
 fim_imsize    = 1024
 fim_bin_size  = 0.7
 #
@@ -106,9 +108,24 @@ fim_mgain     = 0.8
 #
 # ===========================
 
+# ===========================
+#
+# do the steering
+#
+
+# swith the self-calibration
+#
+do_selfcal      = True
+
+# swith the final imaging
+#
+dofinal_image   = True
+
 # cleaning up 
 #
 dodelmaskimages = True   # If True, deletes the images from which the mask has been produced
+#
+# ===========================
 
 # ============================================================================================================
 # ============================================================================================================
@@ -138,6 +155,10 @@ if doapply_precal:
         # 
         print(handgaintable,' have been applied.')
         sys.exit(-1)
+#
+# ============================================================================================================
+# ============================================================================================================
+# ============================================================================================================
 
 
 
@@ -146,12 +167,12 @@ if doapply_precal:
 #  DO NOT EDIT BOYOND UNLESS YOU KNOW WHAT YOU ARE DOING
 # ============================================================================================================
 
+selfcal_information  = {}
 
 # ============================================================================================================
 # =========  S E L F - C A L I B R A T I O N process starts here 
 # ============================================================================================================
 #
-do_selfcal = True
 #
 if do_selfcal: 
     #
@@ -168,7 +189,6 @@ if do_selfcal:
     source_name   = list(get_some_info(MSFILE,homedir))[0]
 
     addgaintable, addinterp = [],[]
-    selfcal_information     = {}
 
     for sc in range(len(selfcal_modes)):
 
@@ -277,7 +297,6 @@ if do_selfcal:
 # =========  F I N A L  I M A G I N G 
 # ============================================================================================================
 #
-dofinal_image = True
 #
 if dofinal_image: 
 
