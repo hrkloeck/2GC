@@ -321,7 +321,7 @@ if dofinal_image:
     for rsidat in get_residual_files:
         resi_file_name = rsidat.replace(homedir,'')
         file_key       = 'Stats_'+rsidat.replace(homedir,'').replace(outname,'').replace('residual.fits','').replace('-','')
-        selfcal_information['FINALIMAGE'][file_key] = get_imagestats(resi_file_name,homedir)
+        selfcal_information['FINALIMAGES'][file_key] = get_imagestats(resi_file_name,homedir)
 
     # Generate a source finding
     #
@@ -330,7 +330,7 @@ if dofinal_image:
 
     # here we collect information on the model, the noise etc.
     #
-    selfcal_information['FINALIMAGE']['pybdfs_info'] = [final_tot_flux_model,final_std_resi]
+    selfcal_information['FINALIMAGES']['pybdfs_info'] = [final_tot_flux_model,final_std_resi]
 
     # need to clean up the images
     #
