@@ -128,7 +128,7 @@ def cataloging_file(imagename,homedir=''):
 
 
 
-def make_image(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=1,niter=1,data='DATA',mgain=0.9,maskfile='',updatemodel=False,add_command=''):
+def make_image(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=1,niter=1,data='DATA',mgain=0.9,chan_out=-1,spwds=-1,threshold=-1,maskfile='',updatemodel=False,add_command=''):
     """
     """
 
@@ -139,12 +139,15 @@ def make_image(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=1,niter
     #mgain     = 0.8
     #data      = 'CORRECTED_DATA'
     #print('SWITCH ON CHN_OUT SPWD')
-    chan_out  = 16
-    spwds     = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
-    #chan_out   = 1
-    #spwds      = '8'
 
-    threshold = 0.000003
+    # Hardcoded stuff for the S-Band comissioning
+    #
+    if spwd == -1:
+            spwds     = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
+    if chan_out == -1:
+        chan_out  = 16
+    if threshold == -1:
+        threshold = 0.000003
 
     wsclean_command = 'wsclean '
     if len(maskfile) > 0:

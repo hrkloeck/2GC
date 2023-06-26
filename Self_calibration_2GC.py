@@ -105,6 +105,9 @@ fim_bin_size        = 0.7
 fim_niter           = 300000
 fim_data            = 'CORRECTED_DATA'
 fim_mgain           = 0.8
+fim_chan_out        = 16
+fim_spwds           = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
+fim_threshold       = 0.000003
 fim_imagedir_ext    = ''             # additional extension of the final directory 
 #
 # ===========================
@@ -220,7 +223,7 @@ if do_selfcal:
         # Add model into the MS file
         #
         outname        = 'MODIM'+str(sc_marker)
-        images         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],maskfile=mask_file,updatemodel=True,add_command='')
+        images         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],chan_out=-1,spwds=-1,threshold=-1,maskfile=mask_file,updatemodel=True,add_command='')
 
         # determine the stats of the model subtracted image
         #
@@ -308,13 +311,17 @@ if dofinal_image:
     #
     # produce the final image
     #
-    images        = make_image(MSFILE,outname,homedir,fim_weighting,fim_imsize,fim_bin_size,fim_niter,fim_data,fim_mgain,maskfile='',updatemodel=False,add_command='')
+    images        = make_image(MSFILE,outname,homedir,fim_weighting,fim_imsize,fim_bin_size,fim_niter,fim_data,fim_mgain,chan_out=fim_chan_out,spwds=fim_spwds,threshold=fim_threshold,maskfile='',updatemodel=False,add_command='')
 
     # get stats 
     #
-    stats_image    = outname+'-MFS-residual.fits'
-    selfcal_information['FINALIMAGE'] = {}
-    selfcal_information['FINALIMAGE']['Stats'] = get_imagestats(stats_image,homedir)
+    get_residual_files = glob.glob(homedir+outname+'*'+'residual.fits')
+    selfcal_information['FINALIMAGES'] = {}
+    #
+    for rsidat in get_residual_files:
+        resi_file_name = rsidat.replace(homedir,'')
+        file_key       = 'Stats_'+rsidat.replace(homedir,'').replace(outname,'').replace('residual.fits','').replace('-','')
+        selfcal_information['FINALIMAGE'][file_key] = get_imagestats(resi_file_name,homedir)
 
     # Generate a source finding
     #
