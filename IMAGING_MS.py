@@ -67,11 +67,17 @@ def main():
     robust      = -0.5
     bin_size    = '0.7arcsec'
     threshold   = 0.000003
-    spw        = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
+    spw         = '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15' #'0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
     gain        =  0.8  # 0.1
 
     field       = '0'
 
+    file_taylor_ext = []
+    if nterms > 1:
+        for i in range(nterms):
+            file_taylor_ext.append('.tt'+str(i))
+    else:
+        file_taylor_ext = ['']
 
     # Get the source_name
     source_name   = list(get_some_info(MSFN,homedir))[0]
@@ -93,7 +99,8 @@ def main():
             print(' * Got exception: {}'.format(exc))
 
         for outtyp in outputtype:
-            casatasks.exportfits(imagename=outputfile+'.'+outtyp,fitsimage=outputfile+'_'+outtyp+'.fits',history=False)
+            for tt in file_taylor_ext:
+                casatasks.exportfits(imagename=outputfile+'.'+outtyp+tt,fitsimage=outputfile+'_'+outtyp+tt+'.fits',history=False)
 
 
 
@@ -101,7 +108,7 @@ def main():
 
     # Generate a source finding
     #
-    final_image    = outputfilename+'_image.fits'
+    final_image    = outputfilename+'_image'+file_taylor_ext[0]+'.fits'
     cata_dir,final_tot_flux_model,final_std_resi  = cataloging_file(final_image,homedir)
 
     # here we collect information on the model, the noise etc.
@@ -111,7 +118,7 @@ def main():
 
     # determine the stats of the model subtracted image
     #
-    stats_image    = outputfilename+'_residual.fits'
+    stats_image    = outputfilename+'_residual'+file_taylor_ext[0]+'.fits'
     imaging_information['FINALIMAGE']['Stats_resi'] = get_imagestats(stats_image,homedir)
 
     # save infomation
@@ -132,7 +139,8 @@ def main():
     if cleanup:
         im_file_ext_casa = ['image','mask','model','pb','psf','residual','sumwt']
         for imfile in im_file_ext_casa:
-            os.system('rm -fr '+homedir+outputfilename+'.'+imfile)
+            for tt in file_taylor_ext:
+                os.system('rm -fr '+homedir+outputfilename+'.'+imfile+tt)
 
 
 def new_argument_parser():
