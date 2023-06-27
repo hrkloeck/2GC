@@ -82,9 +82,9 @@ From: ubuntu:20.04
     && bash bootstrap.sh && ./b2 install \
     && cd / && rm -r boost_1_79_0 boost_1_79_0.tar.bz2
     
-    # Install standard python packages    
+    # Install standard python packages
     pip3 install -U pip
-    pip3 install -U numpy astropy aplpy ipython pylint astroquery
+    pip3 install -U numpy astropy aplpy ipython pylint astroquery numpyencoder
     
     # get dask-ms installed
     #
