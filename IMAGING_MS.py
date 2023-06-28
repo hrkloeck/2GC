@@ -138,10 +138,10 @@ def main():
     #
     if cleanup:
         #im_file_ext_casa = ['image','mask','model','pb','psf','residual','sumwt']
-        im_file_ext_casa = ['mask','model','pb','sumwt']
+        im_file_ext_casa = ['mask','model','pb','sumwt*','alpha*','image*','residual*','psf*']
         for imfile in im_file_ext_casa:
             for tt in file_taylor_ext:
-                os.system('rm -fr '+homedir+outputfilename+'.'+imfile+tt)
+                os.system('rm -fr '+homedir+outputfilename+'.'+imfile)
 
 
 def new_argument_parser():
