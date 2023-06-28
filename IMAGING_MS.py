@@ -119,7 +119,7 @@ def main():
     # determine the stats of the model subtracted image
     #
     stats_image    = outputfilename+'_residual'+file_taylor_ext[0]+'.fits'
-    imaging_information['FINALIMAGE']['Stats_resi'] = get_imagestats(stats_image,homedir)
+    imaging_information['FINALIMAGE']['Stats_resi'+file_taylor_ext[0]] = get_imagestats(stats_image,homedir)
 
     # save infomation
     #
@@ -136,11 +136,9 @@ def main():
 
     # delete all produced files except the outfile
     #
-    if cleanup:
-        #im_file_ext_casa = ['image','mask','model','pb','psf','residual','sumwt']
-        im_file_ext_casa = ['mask','model','pb','sumwt*','alpha*','image*','residual*','psf*']
+    if cleanup == True:
+        im_file_ext_casa = ['mask*','model*','pb*','sumwt*','alpha*','image*','residual*','psf*']
         for imfile in im_file_ext_casa:
-            for tt in file_taylor_ext:
                 os.system('rm -fr '+homedir+outputfilename+'.'+imfile)
 
 
