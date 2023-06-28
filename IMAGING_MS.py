@@ -130,14 +130,15 @@ def main():
 
     # store casa log file to current directory 
     #
-    current_casa_log = find_CASA_logfile(checkdir='HOME',homdir='')
-    shutil.move(current_casa_log,homedir)    
+    #current_casa_log = find_CASA_logfile(checkdir='HOME',homdir='')
+    #shutil.move(current_casa_log,homedir)    
 
 
     # delete all produced files except the outfile
     #
     if cleanup:
-        im_file_ext_casa = ['image','mask','model','pb','psf','residual','sumwt']
+        #im_file_ext_casa = ['image','mask','model','pb','psf','residual','sumwt']
+        im_file_ext_casa = ['mask','model','pb','sumwt']
         for imfile in im_file_ext_casa:
             for tt in file_taylor_ext:
                 os.system('rm -fr '+homedir+outputfilename+'.'+imfile+tt)
