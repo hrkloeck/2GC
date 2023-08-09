@@ -183,7 +183,7 @@ if doapply_precal:
 #  DO NOT EDIT BOYOND UNLESS YOU KNOW WHAT YOU ARE DOING
 # ============================================================================================================
 
-selfcal_information  = {}
+selfcal_information  = OrderedDict()
 
 # Get the source_name
 source_name   = list(get_some_info(MSFILE,homedir))[0]
