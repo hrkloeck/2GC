@@ -100,7 +100,7 @@ def make_mask(image_fits_file,regionfile,fitsoutput_mask,sc_marker=0,homedir='',
 
 def make_region_file(imagename,homedir=''):
     """
-    uses pybdfs and Jonah's source finding with mask setup
+    uses pybdsf and Jonah's source finding with mask setup
     """
 
     # set settings
@@ -139,7 +139,7 @@ def make_region_file(imagename,homedir=''):
 
 def cataloging_fits(imagename,homedir=''):
     """
-    uses pybdfs and Jonah's source finding to generate a catalouge
+    uses pybdsf and Jonah's source finding to generate a catalouge
     """
 
     # set settings
@@ -153,20 +153,20 @@ def cataloging_fits(imagename,homedir=''):
     #
     os.system(source_finding)
 
-    # pybdfs log file
+    # pybdsf log file
     #
-    pybdfs_log = imagename+'.pybdsf.log'
+    pybdsf_log = imagename+'.pybdsf.log'
 
-    return homedir,pybdsf_dir,pybdfs_log
+    return homedir,pybdsf_dir,pybdsf_log
 
 
 
-def get_info_from_pybdfslog(pybdsf_log,pybdsf_dir='',homedir=''):
+def get_info_from_pybdsflog(pybdsf_log,pybdsf_dir='',homedir=''):
     """
-    extract information out of the pybdfs log files
+    extract information out of the pybdsf log files
     and return a dic with relevant information
     """
-    pybdfs_info = {}
+    pybdsf_info = {}
 
     # optain information of the number of sources
     #
@@ -177,7 +177,7 @@ def get_info_from_pybdfslog(pybdsf_log,pybdsf_dir='',homedir=''):
     idx_ng          = get_list_index(ngausgetinfo,'Gaussians')
     tot_num_sources = ngausgetinfo[idx_ng[-1]+2]     # take the last entry
     
-    pybdfs_info['nsource'] = eval(tot_num_sources)
+    pybdsf_info['nsource'] = eval(tot_num_sources)
 
     # optain information of the total flux density of the model
     #
@@ -188,7 +188,7 @@ def get_info_from_pybdfslog(pybdsf_log,pybdsf_dir='',homedir=''):
     idx_jy         = get_list_index(jygetinfo,'Jy')
     tot_flux_model = jygetinfo[idx_jy[-1]-1]     # take the last entry
 
-    pybdfs_info['nsource_flux_jy'] = eval(tot_flux_model)
+    pybdsf_info['nsource_flux_jy'] = eval(tot_flux_model)
 
     # optain information of the final std in the image
     #
@@ -199,7 +199,7 @@ def get_info_from_pybdfslog(pybdsf_log,pybdsf_dir='',homedir=''):
     idx_std   = get_list_index(stdgetinfo,'(Jy/beam)')
     std_resi  = stdgetinfo[idx_std[-1]-1]     # take the last entry
 
-    pybdfs_info['residual_image_noise_jy'] = eval(std_resi)
+    pybdsf_info['residual_image_noise_jy'] = eval(std_resi)
 
 
     # optain information of the beam shape 
@@ -213,18 +213,18 @@ def get_info_from_pybdfslog(pybdsf_log,pybdsf_dir='',homedir=''):
     bmin       = eval(beamgetinfo[idx_beam[-1]-2].replace('(','').replace(')','').replace(',',''))
     PA         = eval(beamgetinfo[idx_beam[-1]-1].replace(')',''))
     #
-    pybdfs_info['bmaj_deg'] = bmaj
-    pybdfs_info['bmin_deg'] = bmin
-    pybdfs_info['PA_deg']   = PA
+    pybdsf_info['bmaj_deg'] = bmaj
+    pybdsf_info['bmin_deg'] = bmin
+    pybdsf_info['PA_deg']   = PA
     
 
-    return pybdfs_info
+    return pybdsf_info
 
 
 
 #def cataloging_file(imagename,homedir=''):
 #    """
-#    uses pybdfs and Jonah's source finding
+#    uses pybdf and Jonah's source finding
 #    """
 #
 #    filename       = homedir + imagename
@@ -255,62 +255,59 @@ def get_info_from_pybdfslog(pybdsf_log,pybdsf_dir='',homedir=''):
 #    std_resi = stdgetinfo[idx_std-1]
 #
 #    return pybdsf_dir, eval(tot_flux_model), eval(std_resi)
-
-
-
-
-def make_image_old(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=1,niter=1,data='DATA',mgain=0.9,chan_out=-1,spwds=-1,threshold=-1,maskfile='',updatemodel=False,add_command=''):
-    """
-    """
-
-    #weighting = -0.5
-    #imsize    = 8192
-    #bin_size  = 0.7    # arcsec    
-    #niter     = 1000
-    #mgain     = 0.8
-    #data      = 'CORRECTED_DATA'
-    #print('SWITCH ON CHN_OUT SPWD')
-
-    # Hardcoded stuff for the S-Band comissioning
-    #
-    if spwds == -1:
-            spwds     = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
-    if chan_out == -1:
-        chan_out  = 16
-    if threshold == -1:
-        threshold = 0.000003
-
-    wsclean_command = 'wsclean '
-    if len(maskfile) > 0:
-        wsclean_command += ' -fits-mask '+homedir+maskfile
-    wsclean_command += ' -j 14 -mem 75 -reorder -parallel-reordering 8 -parallel-gridding 8'
-    if updatemodel == False:
-        wsclean_command += ' -no-update-model-required '
-    wsclean_command += ' -weight briggs '+str(weighting)
-    #wsclean_command += ' -use-wgridder -weighting-rank-filter 3'
-    wsclean_command += ' -gridder wgridder '
-    wsclean_command += ' -weighting-rank-filter 3'
-    wsclean_command += ' -size '+str(imsize)+' '+str(imsize)
-    wsclean_command += ' -data-column '+data
-    wsclean_command += ' -scale '+str(bin_size)+'asec'
-    wsclean_command += ' -pol I '
-    wsclean_command += ' -niter '+str(niter)
-    wsclean_command += ' -mgain '+str(mgain)
-    #print('HRK HERE ALSO ')
-    wsclean_command += ' -join-channels' 
-    wsclean_command += ' -channels-out '+str(chan_out) 
-    wsclean_command += ' -spws '+spwds 
-    wsclean_command += ' -threshold '+str(threshold)
-    wsclean_command += ' -auto-mask 3 -auto-threshold 0.3'
-    if len(add_command) > 0:
-        wsclean_command += add_command
-    wsclean_command += ' -name '+homedir+outname
-    wsclean_command += ' '+homedir+MSFILE
-
-    print(wsclean_command)
-    #os.system(wsclean_command)
-    
-    return glob.glob(homedir+outname+'*fits')
+#
+#def make_image_old(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=1,niter=1,data='DATA',mgain=0.9,chan_out=-1,spwds=-1,threshold=-1,maskfile='',updatemodel=False,add_command=''):
+#    """
+#    """
+#
+#    #weighting = -0.5
+#    #imsize    = 8192
+#    #bin_size  = 0.7    # arcsec    
+#    #niter     = 1000
+#    #mgain     = 0.8
+#    #data      = 'CORRECTED_DATA'
+#    #print('SWITCH ON CHN_OUT SPWD')
+#
+#    # Hardcoded stuff for the S-Band comissioning
+#    #
+#    if spwds == -1:
+#            spwds     = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
+#    if chan_out == -1:
+#        chan_out  = 16
+#    if threshold == -1:
+#        threshold = 0.000003
+#
+#    wsclean_command = 'wsclean '
+#    if len(maskfile) > 0:
+#        wsclean_command += ' -fits-mask '+homedir+maskfile
+#    wsclean_command += ' -j 14 -mem 75 -reorder -parallel-reordering 8 -parallel-gridding 8'
+#    if updatemodel == False:
+#        wsclean_command += ' -no-update-model-required '
+#    wsclean_command += ' -weight briggs '+str(weighting)
+#    #wsclean_command += ' -use-wgridder -weighting-rank-filter 3'
+#    wsclean_command += ' -gridder wgridder '
+#    wsclean_command += ' -weighting-rank-filter 3'
+#    wsclean_command += ' -size '+str(imsize)+' '+str(imsize)
+#    wsclean_command += ' -data-column '+data
+#    wsclean_command += ' -scale '+str(bin_size)+'asec'
+#    wsclean_command += ' -pol I '
+#    wsclean_command += ' -niter '+str(niter)
+#    wsclean_command += ' -mgain '+str(mgain)
+#    #print('HRK HERE ALSO ')
+#    wsclean_command += ' -join-channels' 
+#    wsclean_command += ' -channels-out '+str(chan_out) 
+#    wsclean_command += ' -spws '+spwds 
+#    wsclean_command += ' -threshold '+str(threshold)
+#    wsclean_command += ' -auto-mask 3 -auto-threshold 0.3'
+#    if len(add_command) > 0:
+#        wsclean_command += add_command
+#    wsclean_command += ' -name '+homedir+outname
+#    wsclean_command += ' '+homedir+MSFILE
+#
+#    print(wsclean_command)
+#    #os.system(wsclean_command)
+#    
+#    return glob.glob(homedir+outname+'*fits')
 
 
 def make_image(MSFILE,outname,homedir,wcs_para):
@@ -330,7 +327,6 @@ def make_image(MSFILE,outname,homedir,wcs_para):
     wsclean_command += ' -name '+homedir+outname
     wsclean_command += ' '+homedir+MSFILE
 
-    #print(wsclean_command)
     os.system(wsclean_command)
     
     return glob.glob(homedir+outname+'*fits')
@@ -361,7 +357,6 @@ def concat_dic(dic_a,dic_b):
     c_dic = OrderedDict()
     
     for w in dic_a.keys():
-        print(w)
         c_dic[w] = dic_a[w]
 
     for w in dic_b.keys():
@@ -429,52 +424,53 @@ def apply_calibration(MSFILE,MSOUTPUT,homedir,fieldid,gaintable=[],interp=[]):
 
 
 
-def masking_old(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=0.7,niter=1,data='DATA',mgain=0.8,sc_marker=0,dodelmaskimages=False):
-    """
-    generates a fits image mask
-    """
+#def masking_old(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=0.7,niter=1,data='DATA',mgain=0.8,sc_marker=0,dodelmaskimages=False):
+#    """
+#    generates a fits image mask
+#    """
+#
+#    # Generate an image via (wsclean)
+#    #
+#    image_files         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,niter,data,mgain,maskfile='',updatemodel=False,add_command='')
+#    
+#    if len(image_files) > 5:
+#        for f in image_files:
+#            if f == homedir+outname+'-MFS-image.fits':
+#                # indicate image to be used for source finiding
+#                MFS_image      = image_files[image_files.index(homedir+outname+'-MFS-image.fits')].replace(homedir,'')
+#    else:
+#        MFS_image      = image_files[image_files.index(homedir+outname+'-image.fits')].replace(homedir,'')
+#
+#    # source finding useing Jonah's software and setting (pybdsf)
+#    pybdsf_dir,region_file,tot_flux_model,std_resi  = make_region_file(MFS_image,homedir)
+#
+#    # copy region file 
+#    #
+#    shutil.copy(homedir+pybdsf_dir+'/'+region_file,homedir)
+#
+#
+#    # generate FITS image mask
+#    #
+#    delete_ms_images = True
+#    fitsoutput_mask  = 'SC'+str(sc_marker)+'_MASK'
+#    mask_fits_file   = make_mask(MFS_image,region_file,fitsoutput_mask,sc_marker,homedir,delete_ms_images)
+#
+#
+#    # clean up all the files
+#    #
+#    scdir = 'SC_'+str(sc_marker)+'_MK'+'/'
+#    os.mkdir(homedir+scdir)
+#    get_files = glob.glob(homedir+outname+'*')
+#    for im in get_files:
+#        shutil.move(im,homedir+scdir)
+#
+#    if dodelmaskimages == True:
+#            delimages = 'rm -fr '+homedir+scdir
+#            os.system(delimages)
+#
+#
+#    return mask_fits_file,tot_flux_model,std_resi
 
-    # Generate an image via (wsclean)
-    #
-    image_files         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,niter,data,mgain,maskfile='',updatemodel=False,add_command='')
-    
-    if len(image_files) > 5:
-        for f in image_files:
-            if f == homedir+outname+'-MFS-image.fits':
-                # indicate image to be used for source finiding
-                MFS_image      = image_files[image_files.index(homedir+outname+'-MFS-image.fits')].replace(homedir,'')
-    else:
-        MFS_image      = image_files[image_files.index(homedir+outname+'-image.fits')].replace(homedir,'')
-
-    # source finding useing Jonah's software and setting (pybdfs)
-    pybdsf_dir,region_file,tot_flux_model,std_resi  = make_region_file(MFS_image,homedir)
-
-    # copy region file 
-    #
-    shutil.copy(homedir+pybdsf_dir+'/'+region_file,homedir)
-
-
-    # generate FITS image mask
-    #
-    delete_ms_images = True
-    fitsoutput_mask  = 'SC'+str(sc_marker)+'_MASK'
-    mask_fits_file   = make_mask(MFS_image,region_file,fitsoutput_mask,sc_marker,homedir,delete_ms_images)
-
-
-    # clean up all the files
-    #
-    scdir = 'SC_'+str(sc_marker)+'_MK'+'/'
-    os.mkdir(homedir+scdir)
-    get_files = glob.glob(homedir+outname+'*')
-    for im in get_files:
-        shutil.move(im,homedir+scdir)
-
-    if dodelmaskimages == True:
-            delimages = 'rm -fr '+homedir+scdir
-            os.system(delimages)
-
-
-    return mask_fits_file,tot_flux_model,std_resi
 
 def masking(MSFILE,outname,homedir,additional_wsclean_para_sc,sc_marker=0,dodelmaskimages=False):
     """
@@ -483,7 +479,6 @@ def masking(MSFILE,outname,homedir,additional_wsclean_para_sc,sc_marker=0,dodelm
 
     # Generate an image via (wsclean)
     #
-    #image_files         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,niter,data,mgain,maskfile='',updatemodel=False,add_command='')
     image_files         = make_image(MSFILE,outname,homedir,additional_wsclean_para_sc)
     
     if len(image_files) > 5:
@@ -494,7 +489,7 @@ def masking(MSFILE,outname,homedir,additional_wsclean_para_sc,sc_marker=0,dodelm
     else:
         MFS_image      = image_files[image_files.index(homedir+outname+'-image.fits')].replace(homedir,'')
 
-    # source finding useing Jonah's software and setting (pybdfs)
+    # source finding useing Jonah's software and setting (pybdsf)
     pybdsf_dir,region_file,tot_flux_model,std_resi  = make_region_file(MFS_image,homedir)
 
     # copy region file 

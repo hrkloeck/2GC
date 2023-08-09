@@ -20,8 +20,9 @@
 #
 #
 # History:
-#
-#
+#    08/23: changed the input parameters of the imaging
+#    08/23: changed the way the information is extracted 
+#           out of the pybdsf log file 
 #
 #
 import os
@@ -62,27 +63,32 @@ from CAL2GC_lib import *
 # File information
 #
 #MSFILE  = 'J0408-6545_cal.ms'
-MSFILE = 'J0252-7104_cal.ms'
+#MSFILE = 'J0252-7104_cal.ms'
 #MSFILE = 'Deep2pcal.ms'
+
+MSFILE = 'J0521+1638_cal.ms'
+
 #
 homedir = '/data/'                  # this is the singularity binding 
 #
 # ===========================
 
+
+# ===========================
 #
 # Input for the Self-calibration run 
 #
-
-# Generate image parameter
+#
+# General image parameter
 #
 weighting            = -0.5
-imsize               = 1024
+imsize               = 8192 
 bin_size             = 0.7
-# refant               = 'm061' # use by Sarrvesh
-refant               = 'm029' # Based on werkzeugkasten
 
 # Selfcalib setting
 #
+refant               = 'm029' # Based on werkzeugkasten
+# refant               = 'm061' # use by Sarrvesh
 selfcal_modes        = ['p','p','p','ap']
 selfcal_solint       = ['120s','60s','10s','180s']
 selfcal_interp       = ['linear','linear','linear','linear']
@@ -91,15 +97,20 @@ selfcal_mgain        = [0.8,0.8,0.8,0.8]
 selfcal_data         = ['DATA','CORRECTED_DATA','CORRECTED_DATA','CORRECTED_DATA']
 selfcal_usemaskfile  = ['','','','']  # use the mask file determined by hand from previous runs 
 selfcal_addcommand   = ['','','','']  # add additional wsclean commands 
+selfcal_chan_out     = 16
+selfcal_spwds        = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
+selfcal_threshold        = 0.000003
 #
 # ===========================
 
+
+# ===========================
 #
-# Input for the final imaging
+# General imaging paramter for the final imaging
 #
 outname             = 'FINAL_SC_IMAGE'
 fim_weighting       = -0.5
-fim_imsize          = 1024
+fim_imsize          = 8192
 fim_bin_size        = 0.7
 #
 fim_niter           = 300000
@@ -215,25 +226,22 @@ if do_selfcal:
         additional_wsclean_para_ma['-weight briggs']            = str(weighting)
         additional_wsclean_para_ma['-niter']                    = str(selfcal_niter[sc])
         additional_wsclean_para_ma['-mgain']                    = str(selfcal_mgain[sc])
-        additional_wsclean_para_ma['-channels-out']             = str(chan_out) 
-        additional_wsclean_para_ma['-spws']                     = spwds 
-        additional_wsclean_para_ma['-threshold']                = str(threshold)
+        additional_wsclean_para_ma['-channels-out']             = str(selfcal_chan_out) 
+        additional_wsclean_para_ma['-spws']                     = str(selfcal_spwds) 
+        additional_wsclean_para_ma['-threshold']                = str(selfcal_threshold)
         additional_wsclean_para_ma['-join-channels']            = ''
         additional_wsclean_para_ma['-no-update-model-required'] = ''
-
 
 
         # Generates a mask file
         #
         outname     = 'MKMASK'+str(sc_marker)
-
-        #mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],sc_marker,dodelmaskimages)
         mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,additional_wsclean_para_ma,sc_marker,dodelmaskimages)
 
 
         # here we collect information on the model, the noise etc.
         #
-        selfcal_information['SC'+str(sc)]['pybdfs_info'] = [tot_flux_model,std_resi]
+        selfcal_information['SC'+str(sc)]['pybdsf_info'] = [tot_flux_model,std_resi]
 
         # If needed add a mask to be used instead
         #
@@ -241,7 +249,6 @@ if do_selfcal:
             mask_file = selfcal_usemaskfile[sc]
 
         selfcal_information['SC'+str(sc)]['MASK'] = mask_file
-
 
 
         # set imaging parameter for model generation
@@ -254,16 +261,15 @@ if do_selfcal:
         additional_wsclean_para_sc['-weight briggs']            = str(weighting)
         additional_wsclean_para_sc['-niter']                    = str(selfcal_niter[sc])
         additional_wsclean_para_sc['-mgain']                    = str(selfcal_mgain[sc])
-        additional_wsclean_para_sc['-channels-out']             = str(chan_out) 
-        additional_wsclean_para_sc['-spws']                     = spwds 
-        additional_wsclean_para_sc['-threshold']                = str(threshold)
+        additional_wsclean_para_sc['-channels-out']             = str(selfcal_chan_out) 
+        additional_wsclean_para_sc['-spws']                     = str(selfcal_spwds) 
+        additional_wsclean_para_sc['-threshold']                = str(selfcal_threshold)
         additional_wsclean_para_sc['-join-channels']            = ''
-        additional_wsclean_para_sc['-fits-mask']                = +homedir+maskfile
-
+        additional_wsclean_para_sc['-fits-mask']                = homedir+mask_file
+        
         # Add model into the MS file
         #
         outname        = 'MODIM'+str(sc_marker)
-        #images         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],chan_out=-1,spwds=-1,threshold=-1,maskfile=mask_file,updatemodel=True,add_command='')
         images         = make_image(MSFILE,outname,homedir,additional_wsclean_para_sc)
 
 
@@ -298,11 +304,7 @@ if do_selfcal:
         # the individual calibration steps 
         # to be applied 
         #
-
-        #print(addgaintable, addinterp)
-
         selfcal_information['SC'+str(sc)]['calip_setting'] = [selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],selfcal_solint[sc],selfcal_modes[sc]]
-
         selfcal_information['SC'+str(sc)]['calip_inter']   = [addgaintable,addinterp]
 
 
@@ -352,7 +354,7 @@ if dofinal_image:
     outname       = 'FINAL_SC_IMAGE_'+source_name
 
 
-    # Set the parameters
+    # Set the imaging parameters
     #
     additional_wsclean_para = OrderedDict()
     #
@@ -368,11 +370,8 @@ if dofinal_image:
     additional_wsclean_para['-threshold']                = str(fim_threshold)
     additional_wsclean_para['-join-channels']            = ''
     additional_wsclean_para['-no-update-model-required'] = ''
-
     #
     # produce the final image
-    #
-    # old one#  images        = make_image(MSFILE,outname,homedir,fim_weighting,fim_imsize,fim_bin_size,fim_niter,fim_data,fim_mgain,chan_out=fim_chan_out,spwds=fim_spwds,threshold=fim_threshold,maskfile='',updatemodel=False,add_command='')
     #
     images = make_image(MSFILE,outname,homedir,additional_wsclean_para)
 
@@ -386,21 +385,15 @@ if dofinal_image:
         file_key       = 'Stats_'+rsidat.replace(homedir,'').replace(outname,'').replace('residual.fits','').replace('-','')
         selfcal_information['FINALIMAGES'][file_key] = get_imagestats(resi_file_name,homedir)
 
-    # Generate a source finding
+    # run cataloger and source finding
     #
     final_image    = outname+'-MFS-image.fits'
+    homedir,pybdsf_dir,pybdsf_log = cataloging_fits(final_image,homedir)
+    pybdsf_info = get_info_from_pybdsflog(pybdsf_log,pybdsf_dir+'/',homedir+'/')
 
-    #cata_dir,final_tot_flux_model,final_std_resi  = cataloging_file(final_image,homedir)
-
-    homedir,pybdsf_dir,pybdfs_log = cataloging_fits(final_image,homedir)
-
-    pybdfs_info = get_info_from_pybdfslog(pybdsf_log,pybdsf_dir+'/',homedir+'/')
-
-
-    # here we collect information on the model, the noise etc.
+    # collect information on the model, the noise etc.
     #
-    #selfcal_information['FINALIMAGES']['pybdfs_info'] = [final_tot_flux_model,final_std_resi]
-    selfcal_information['FINALIMAGES']['pybdfs_info'] = pybdfs_info
+    selfcal_information['FINALIMAGES']['pybdsf_info'] = pybdsf_info
 
     # need to clean up the images
     #
