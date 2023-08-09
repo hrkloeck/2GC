@@ -112,6 +112,7 @@ fim_imagedir_ext    = ''             # additional extension of the final directo
 #
 # ===========================
 
+
 # ===========================
 #
 # do the steering
@@ -204,10 +205,31 @@ if do_selfcal:
         selfcal_information['SC'+str(sc)] = {}
         sc_marker = sc
 
+        # set imaging parameter for the masking
+        #
+        additional_wsclean_para_ma = OrderedDict()
+        additional_wsclean_para_ma['-data-column']              = selfcal_data[sc]
+        additional_wsclean_para_ma['-size ']                    = str(imsize)+' '+str(imsize)
+        additional_wsclean_para_ma['-scale']                    = str(bin_size)+'asec'
+        additional_wsclean_para_ma['-pol']                      = 'I'
+        additional_wsclean_para_ma['-weight briggs']            = str(weighting)
+        additional_wsclean_para_ma['-niter']                    = str(selfcal_niter[sc])
+        additional_wsclean_para_ma['-mgain']                    = str(selfcal_mgain[sc])
+        additional_wsclean_para_ma['-channels-out']             = str(chan_out) 
+        additional_wsclean_para_ma['-spws']                     = spwds 
+        additional_wsclean_para_ma['-threshold']                = str(threshold)
+        additional_wsclean_para_ma['-join-channels']            = ''
+        additional_wsclean_para_ma['-no-update-model-required'] = ''
+
+
+
         # Generates a mask file
         #
         outname     = 'MKMASK'+str(sc_marker)
-        mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],sc_marker,dodelmaskimages)
+
+        #mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],sc_marker,dodelmaskimages)
+        mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,additional_wsclean_para_ma,sc_marker,dodelmaskimages)
+
 
         # here we collect information on the model, the noise etc.
         #
@@ -220,10 +242,30 @@ if do_selfcal:
 
         selfcal_information['SC'+str(sc)]['MASK'] = mask_file
 
+
+
+        # set imaging parameter for model generation
+        #
+        additional_wsclean_para_sc = OrderedDict()
+        additional_wsclean_para_sc['-data-column']              = selfcal_data[sc]
+        additional_wsclean_para_sc['-size ']                    = str(imsize)+' '+str(imsize)
+        additional_wsclean_para_sc['-scale']                    = str(bin_size)+'asec'
+        additional_wsclean_para_sc['-pol']                      = 'I'
+        additional_wsclean_para_sc['-weight briggs']            = str(weighting)
+        additional_wsclean_para_sc['-niter']                    = str(selfcal_niter[sc])
+        additional_wsclean_para_sc['-mgain']                    = str(selfcal_mgain[sc])
+        additional_wsclean_para_sc['-channels-out']             = str(chan_out) 
+        additional_wsclean_para_sc['-spws']                     = spwds 
+        additional_wsclean_para_sc['-threshold']                = str(threshold)
+        additional_wsclean_para_sc['-join-channels']            = ''
+        additional_wsclean_para_sc['-fits-mask']                = +homedir+maskfile
+
         # Add model into the MS file
         #
         outname        = 'MODIM'+str(sc_marker)
-        images         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],chan_out=-1,spwds=-1,threshold=-1,maskfile=mask_file,updatemodel=True,add_command='')
+        #images         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],chan_out=-1,spwds=-1,threshold=-1,maskfile=mask_file,updatemodel=True,add_command='')
+        images         = make_image(MSFILE,outname,homedir,additional_wsclean_para_sc)
+
 
         # determine the stats of the model subtracted image
         #
@@ -308,10 +350,31 @@ if dofinal_image:
     # that for the time being ok, but need source name here
     #
     outname       = 'FINAL_SC_IMAGE_'+source_name
+
+
+    # Set the parameters
+    #
+    additional_wsclean_para = OrderedDict()
+    #
+    additional_wsclean_para['-data-column']              = fim_data
+    additional_wsclean_para['-size ']                    = str(fim_imsize)+' '+str(fim_imsize)
+    additional_wsclean_para['-scale']                    = str(fim_bin_size)+'asec'
+    additional_wsclean_para['-pol']                      = 'I'
+    additional_wsclean_para['-weight briggs']            = str(fim_weighting)
+    additional_wsclean_para['-niter']                    = str(fim_niter)
+    additional_wsclean_para['-mgain']                    = str(fim_mgain)
+    additional_wsclean_para['-channels-out']             = str(fim_chan_out) 
+    additional_wsclean_para['-spws']                     = fim_spwds 
+    additional_wsclean_para['-threshold']                = str(fim_threshold)
+    additional_wsclean_para['-join-channels']            = ''
+    additional_wsclean_para['-no-update-model-required'] = ''
+
     #
     # produce the final image
     #
-    images        = make_image(MSFILE,outname,homedir,fim_weighting,fim_imsize,fim_bin_size,fim_niter,fim_data,fim_mgain,chan_out=fim_chan_out,spwds=fim_spwds,threshold=fim_threshold,maskfile='',updatemodel=False,add_command='')
+    # old one#  images        = make_image(MSFILE,outname,homedir,fim_weighting,fim_imsize,fim_bin_size,fim_niter,fim_data,fim_mgain,chan_out=fim_chan_out,spwds=fim_spwds,threshold=fim_threshold,maskfile='',updatemodel=False,add_command='')
+    #
+    images = make_image(MSFILE,outname,homedir,additional_wsclean_para)
 
     # get stats 
     #
@@ -326,11 +389,18 @@ if dofinal_image:
     # Generate a source finding
     #
     final_image    = outname+'-MFS-image.fits'
-    cata_dir,final_tot_flux_model,final_std_resi  = cataloging_file(final_image,homedir)
+
+    #cata_dir,final_tot_flux_model,final_std_resi  = cataloging_file(final_image,homedir)
+
+    homedir,pybdsf_dir,pybdfs_log = cataloging_fits(final_image,homedir)
+
+    pybdfs_info = get_info_from_pybdfslog(pybdsf_log,pybdsf_dir+'/',homedir+'/')
+
 
     # here we collect information on the model, the noise etc.
     #
-    selfcal_information['FINALIMAGES']['pybdfs_info'] = [final_tot_flux_model,final_std_resi]
+    #selfcal_information['FINALIMAGES']['pybdfs_info'] = [final_tot_flux_model,final_std_resi]
+    selfcal_information['FINALIMAGES']['pybdfs_info'] = pybdfs_info
 
     # need to clean up the images
     #
