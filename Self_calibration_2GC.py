@@ -229,8 +229,10 @@ if do_selfcal:
         additional_wsclean_para_ma['-channels-out']             = str(selfcal_chan_out) 
         additional_wsclean_para_ma['-spws']                     = str(selfcal_spwds) 
         additional_wsclean_para_ma['-threshold']                = str(selfcal_threshold)
-        additional_wsclean_para_ma['-join-channels']            = ''
         additional_wsclean_para_ma['-no-update-model-required'] = ''
+
+        if selfcal_chan_out > 1:
+            additional_wsclean_para_ma['-join-channels']            = ''
 
 
         # Generates a mask file
@@ -264,7 +266,8 @@ if do_selfcal:
         additional_wsclean_para_sc['-channels-out']             = str(selfcal_chan_out) 
         additional_wsclean_para_sc['-spws']                     = str(selfcal_spwds) 
         additional_wsclean_para_sc['-threshold']                = str(selfcal_threshold)
-        additional_wsclean_para_sc['-join-channels']            = ''
+        if selfcal_chan_out > 1:
+            additional_wsclean_para_sc['-join-channels']            = ''
         additional_wsclean_para_sc['-fits-mask']                = homedir+mask_file
         
         # Add model into the MS file
@@ -275,12 +278,20 @@ if do_selfcal:
 
         # determine the stats of the model subtracted image
         #
-        stats_image    = outname+'-MFS-residual.fits'
+        if selfcal_chan_out > 1:
+            stats_image    = outname+'-MFS-residual.fits'
+        else:
+            stats_image    = outname+'-residual.fits'
+
         selfcal_information['SC'+str(sc)]['Stats'] = get_imagestats(stats_image,homedir)
 
         # provide the entire flux density of the model
         #
-        stats_image    = outname+'-MFS-model.fits'
+        if selfcal_chan_out > 1:
+            stats_image    = outname+'-MFS-model.fits'
+        else:
+            stats_image    = outname+'-model.fits'
+
         selfcal_information['SC'+str(sc)]['Model'] = [sum_imageflux(stats_image,homedir,threshold=0)]
 
         # need to clean up the images
@@ -368,7 +379,8 @@ if dofinal_image:
     additional_wsclean_para['-channels-out']             = str(fim_chan_out) 
     additional_wsclean_para['-spws']                     = fim_spwds 
     additional_wsclean_para['-threshold']                = str(fim_threshold)
-    additional_wsclean_para['-join-channels']            = ''
+    if fim_chan_out > 1:
+        additional_wsclean_para['-join-channels']            = ''
     additional_wsclean_para['-no-update-model-required'] = ''
     #
     # produce the final image
@@ -387,7 +399,8 @@ if dofinal_image:
 
     # run cataloger and source finding
     #
-    final_image    = outname+'-MFS-image.fits'
+    if fim_chan_out > 1:
+        final_image    = outname+'-MFS-image.fits'
     homedir,pybdsf_dir,pybdsf_log = cataloging_fits(final_image,homedir)
     pybdsf_info = get_info_from_pybdsflog(pybdsf_log,pybdsf_dir+'/',homedir+'/')
 
