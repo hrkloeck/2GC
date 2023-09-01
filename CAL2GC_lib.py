@@ -221,108 +221,21 @@ def get_info_from_pybdsflog(pybdsf_log,pybdsf_dir='',homedir=''):
     return pybdsf_info
 
 
-
-#def cataloging_file(imagename,homedir=''):
-#    """
-#    uses pybdf and Jonah's source finding
-#    """
-#
-#    filename       = homedir + imagename
-#    sfinding_dir   = homedir + imagename.replace('.fits','').replace('.FITS','')
-#    pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
-#    source_finding = 'python ' + homedir + 'Image-processing/sourcefinding.py cataloging ' + filename + ' -o fits:srl kvis --plot'
-#
-#    # start the source finding stuff from Jonah
-#    # using the mask setting
-#    #
-##    os.system(source_finding)
-#
-#    # optain information of the total flux density of the model
-#    #
-#    info    = os.popen('grep "Total flux density in model" '+homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log')
-#    getinfo = info.read().split()
-#    info.close()
-# 
-#    idx_jy         = getinfo.index('Jy')
-#    tot_flux_model = getinfo[idx_jy-1]
-#
-#    # optain information of the total flux density of the model
-#    #
-#    stdinfo = os.popen('grep "std. dev:" '+homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log')
-#    stdgetinfo = stdinfo.read().split()
-#    stdinfo.close()
-#    idx_std  = stdgetinfo.index('(Jy/beam)')
-#    std_resi = stdgetinfo[idx_std-1]
-#
-#    return pybdsf_dir, eval(tot_flux_model), eval(std_resi)
-#
-#def make_image_old(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=1,niter=1,data='DATA',mgain=0.9,chan_out=-1,spwds=-1,threshold=-1,maskfile='',updatemodel=False,add_command=''):
-#    """
-#    """
-#
-#    #weighting = -0.5
-#    #imsize    = 8192
-#    #bin_size  = 0.7    # arcsec    
-#    #niter     = 1000
-#    #mgain     = 0.8
-#    #data      = 'CORRECTED_DATA'
-#    #print('SWITCH ON CHN_OUT SPWD')
-#
-#    # Hardcoded stuff for the S-Band comissioning
-#    #
-#    if spwds == -1:
-#            spwds     = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
-#    if chan_out == -1:
-#        chan_out  = 16
-#    if threshold == -1:
-#        threshold = 0.000003
-#
-#    wsclean_command = 'wsclean '
-#    if len(maskfile) > 0:
-#        wsclean_command += ' -fits-mask '+homedir+maskfile
-#    wsclean_command += ' -j 14 -mem 75 -reorder -parallel-reordering 8 -parallel-gridding 8'
-#    if updatemodel == False:
-#        wsclean_command += ' -no-update-model-required '
-#    wsclean_command += ' -weight briggs '+str(weighting)
-#    #wsclean_command += ' -use-wgridder -weighting-rank-filter 3'
-#    wsclean_command += ' -gridder wgridder '
-#    wsclean_command += ' -weighting-rank-filter 3'
-#    wsclean_command += ' -size '+str(imsize)+' '+str(imsize)
-#    wsclean_command += ' -data-column '+data
-#    wsclean_command += ' -scale '+str(bin_size)+'asec'
-#    wsclean_command += ' -pol I '
-#    wsclean_command += ' -niter '+str(niter)
-#    wsclean_command += ' -mgain '+str(mgain)
-#    #print('HRK HERE ALSO ')
-#    wsclean_command += ' -join-channels' 
-#    wsclean_command += ' -channels-out '+str(chan_out) 
-#    wsclean_command += ' -spws '+spwds 
-#    wsclean_command += ' -threshold '+str(threshold)
-#    wsclean_command += ' -auto-mask 3 -auto-threshold 0.3'
-#    if len(add_command) > 0:
-#        wsclean_command += add_command
-#    wsclean_command += ' -name '+homedir+outname
-#    wsclean_command += ' '+homedir+MSFILE
-#
-#    print(wsclean_command)
-#    #os.system(wsclean_command)
-#    
-#    return glob.glob(homedir+outname+'*fits')
-
-
-def make_image(MSFILE,outname,homedir,wcs_para):
+def make_image(MSFILE,outname,homedir,wsc_para):
     """
     combines the wsclean parameter and start the imaging
     """
 
-    full_set_of_wsclean_para = concat_dic(get_wsclean_para(),wcs_para)
+    #full_set_of_wsclean_para = concat_dic(get_wsclean_para(),wsc_para)
 
     wsclean_command = 'wsclean '
 
-    para_keys = full_set_of_wsclean_para.keys()
+    #para_keys = full_set_of_wsclean_para.keys()
+    para_keys = wsc_para.keys()
 
     for k in para_keys:
-        wsclean_command += ' '+ k + ' ' + str(full_set_of_wsclean_para[k])
+        #wsclean_command += ' '+ k + ' ' + str(full_set_of_wsclean_para[k])
+        wsclean_command += ' '+ k + ' ' + str(wsc_para[k])
 
     wsclean_command += ' -name '+homedir+outname
     wsclean_command += ' '+homedir+MSFILE
@@ -472,14 +385,14 @@ def apply_calibration(MSFILE,MSOUTPUT,homedir,fieldid,gaintable=[],interp=[]):
 #    return mask_fits_file,tot_flux_model,std_resi
 
 
-def masking(MSFILE,outname,homedir,additional_wsclean_para_sc,sc_marker=0,dodelmaskimages=False):
+def masking(MSFILE,outname,homedir,wsclean_para_ma,sc_marker=0,dodelmaskimages=False):
     """
     generates a fits image mask
     """
 
     # Generate an image via (wsclean)
     #
-    image_files         = make_image(MSFILE,outname,homedir,additional_wsclean_para_sc)
+    image_files         = make_image(MSFILE,outname,homedir,wsclean_para_ma)
     
     if len(image_files) > 5:
         for f in image_files:

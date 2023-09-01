@@ -99,10 +99,14 @@ selfcal_usemaskfile  = ['','','','']  # use the mask file determined by hand fro
 selfcal_addcommand   = ['','','','']  # add additional wsclean commands 
 selfcal_chan_out     = 16
 selfcal_spwds        = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
-selfcal_threshold        = 0.000003
+selfcal_threshold    = 0.000003
 #
+selfcal_add_command  = OrderedDict()
 # ===========================
 
+print(selfcal_add_command)
+
+sys.exit(-1)
 
 # ===========================
 #
@@ -120,6 +124,8 @@ fim_chan_out        = 16
 fim_spwds           = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
 fim_threshold       = 0.000003
 fim_imagedir_ext    = ''             # additional extension of the final directory 
+
+
 #
 # ===========================
 
@@ -235,10 +241,16 @@ if do_selfcal:
             additional_wsclean_para_ma['-join-channels']            = ''
 
 
+        # get the full set of imaging parameter
+        #
+        default_imaging_para        = get_wsclean_para()
+        full_set_of_wsclean_para_ma = concat_dic(default_imaging_para,additional_wsclean_para_ma)
+
+
         # Generates a mask file
         #
         outname     = 'MKMASK'+str(sc_marker)
-        mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,additional_wsclean_para_ma,sc_marker,dodelmaskimages)
+        mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,full_set_of_wsclean_para_ma,sc_marker,dodelmaskimages)
 
 
         # here we collect information on the model, the noise etc.
@@ -270,11 +282,15 @@ if do_selfcal:
             additional_wsclean_para_sc['-join-channels']            = ''
         additional_wsclean_para_sc['-fits-mask']                = homedir+mask_file
         
+        # get the full set of imaging parameter
+        #
+        default_imaging_para        = get_wsclean_para()
+        full_set_of_wsclean_para_sc = concat_dic(default_imaging_para,additional_wsclean_para_sc)
+
         # Add model into the MS file
         #
         outname        = 'MODIM'+str(sc_marker)
-        images         = make_image(MSFILE,outname,homedir,additional_wsclean_para_sc)
-
+        images         = make_image(MSFILE,outname,homedir,full_set_of_wsclean_para_sc)
 
         # determine the stats of the model subtracted image
         #
@@ -383,9 +399,15 @@ if dofinal_image:
         additional_wsclean_para['-join-channels']            = ''
     additional_wsclean_para['-no-update-model-required'] = ''
     #
+
+    # get the full set of imaging parameter
+    #
+    default_imaging_para        = get_wsclean_para()
+    full_set_of_wsclean_para    = concat_dic(default_imaging_para,additional_wsclean_para)
+
     # produce the final image
     #
-    images = make_image(MSFILE,outname,homedir,additional_wsclean_para)
+    images = make_image(MSFILE,outname,homedir,full_set_of_wsclean_para)
 
     # get stats 
     #
