@@ -58,8 +58,14 @@ from CAL2GC_lib import *
 # singularity exec --bind ${PWD}:/data CONTAINER.simg python /data/Self_calibration_2GC.py
 #
 # =========================================
+# paramter pre-definition
+#
+selfcal_add_wsclean_command      = OrderedDict()
+finalimaging_add_wsclean_command = OrderedDict()
+# =========================================
 
-
+# =========================================
+#
 # File information
 #
 #MSFILE  = 'J0408-6545_cal.ms'
@@ -71,8 +77,8 @@ MSFILE = 'J0521+1638_cal.ms'
 #
 homedir = '/data/'                  # this is the singularity binding 
 #
+#
 # ===========================
-
 
 # ===========================
 #
@@ -101,12 +107,8 @@ selfcal_chan_out     = 16
 selfcal_spwds        = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
 selfcal_threshold    = 0.000003
 #
-selfcal_add_command  = OrderedDict()
+# selfcal_add_wsclean_command['-fit-spectral-pol'] = '4'
 # ===========================
-
-print(selfcal_add_command)
-
-sys.exit(-1)
 
 # ===========================
 #
@@ -124,8 +126,8 @@ fim_chan_out        = 16
 fim_spwds           = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
 fim_threshold       = 0.000003
 fim_imagedir_ext    = ''             # additional extension of the final directory 
-
-
+#
+# finalimaging_add_wsclean_command['']
 #
 # ===========================
 
@@ -281,6 +283,9 @@ if do_selfcal:
         if selfcal_chan_out > 1:
             additional_wsclean_para_sc['-join-channels']            = ''
         additional_wsclean_para_sc['-fits-mask']                = homedir+mask_file
+
+        if len(selfcal_add_wsclean_command.keys()) > 0:
+            additional_wsclean_para_sc = concat_dic(additional_wsclean_para_sc,selfcal_add_wsclean_command)
         
         # get the full set of imaging parameter
         #
@@ -399,6 +404,9 @@ if dofinal_image:
         additional_wsclean_para['-join-channels']            = ''
     additional_wsclean_para['-no-update-model-required'] = ''
     #
+
+    if len(finalimaging_add_wsclean_command.keys()) > 0:
+            additional_wsclean_para = concat_dic(additional_wsclean_para,finalimaging_add_wsclean_command)
 
     # get the full set of imaging parameter
     #
