@@ -531,7 +531,7 @@ def get_some_info(MSFILE,homedir):
     return msource_info
 
 
-def find_CASA_logfile(checkdir='HOME',homdir=''):
+def find_CASA_logfile(checkdir='HOME',homedir=''):
     """
     """
 
