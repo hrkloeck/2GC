@@ -68,14 +68,21 @@ finalimaging_add_wsclean_command = OrderedDict()
 #
 # File information
 #
-#MSFILE  = 'J0408-6545_cal.ms'
-#MSFILE = 'J0252-7104_cal.ms'
-#MSFILE = 'Deep2pcal.ms'
 
-MSFILE = 'J0521+1638_cal.ms'
+if len(sys.argv) == 3:
+    homedir = sys.argv[1]
+    MSFILE  = sys.argv[2]
 
-#
-homedir = '/data/'                  # this is the singularity binding 
+else:
+
+    MSFILE = 'J0252-7104_band1_cald.ms'
+    #MSFILE = 'J0413-8000_band1_cald.ms'
+    homedir = '/data/'                  # this is the singularity binding 
+
+
+print('\n Use home dir: ',homedir)
+print('\n Use MS file: ',MSFILE)
+
 #
 #
 # ===========================
@@ -93,7 +100,7 @@ bin_size             = 0.7
 
 # Selfcalib setting
 #
-refant               = 'm029' # Based on werkzeugkasten
+refant               = 'm000' # Based on werkzeugkasten
 # refant               = 'm061' # use by Sarrvesh
 selfcal_modes        = ['p','p','p','ap']
 selfcal_solint       = ['120s','60s','10s','180s']
