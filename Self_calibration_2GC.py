@@ -180,7 +180,7 @@ if doapply_precal:
 
         # store casa log file to current directory 
         #
-        current_casa_log = find_CASA_logfile(checkdir='HOME',homdir='')
+        current_casa_log = find_CASA_logfile(checkdir='HOME',homedir='')
         shutil.move(current_casa_log,homedir)    
 
         # 
@@ -377,7 +377,7 @@ if do_selfcal:
 
     # store casa log file to current directory 
     #
-    current_casa_log = find_CASA_logfile(checkdir='HOME',homdir='')
+    current_casa_log = find_CASA_logfile(checkdir='HOME',homedir='')
     shutil.move(current_casa_log,homedir)    
 
 
