@@ -17,7 +17,7 @@ import json
 import casatasks
 import numpy as np
 
-from collections import OrderedDict
+#from collections import OrderedDict
 
 #
 # LIBS
@@ -248,7 +248,7 @@ def make_image(MSFILE,outname,homedir,wsc_para):
 def get_wsclean_para():
     """
     """
-    wsclean_para = OrderedDict()
+    wsclean_para = {} #OrderedDict()
     
     wsclean_para['-j']                     = 14
     wsclean_para['-mem']                   = 75
@@ -267,7 +267,7 @@ def get_wsclean_para():
 def concat_dic(dic_a,dic_b):
     """
     """
-    c_dic = OrderedDict()
+    c_dic = {} #OrderedDict()
     
     for w in dic_a.keys():
         c_dic[w] = dic_a[w]
