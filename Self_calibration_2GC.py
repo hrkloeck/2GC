@@ -33,7 +33,8 @@ import json
 #
 import casatasks
 import numpy as np
-from CAL2GC_lib import *
+import CAL2GC_lib as C2GC
+
 
 # ============================================
 # ============================================
@@ -176,12 +177,13 @@ if doapply_precal:
     handinterp    = ['linear','linear','linear','linear','linear']
     handfieldid   = '0'
     if len(handgaintable) > 0 and len(handmsfile) > 0:
-        apply_calibration(handmsfile,handoutputf,homedir,handfieldid,handgaintable,handinterp)
+        C2GC.apply_calibration(handmsfile,handoutputf,homedir,handfieldid,handgaintable,handinterp)
 
         # store casa log file to current directory 
         #
-        current_casa_log = find_CASA_logfile(checkdir='HOME',homedir='')
-        shutil.move(current_casa_log,homedir)    
+        current_casa_log = C2GC.find_CASA_logfile(checkdir='HOME',homedir='')
+        if len(current_casa_log) > 0:
+            shutil.move(current_casa_log,homedir)    
 
         # 
         print(handgaintable,' have been applied.')
@@ -212,11 +214,11 @@ if do_selfcal:
     #
     # Check the Self-calib input
     #
-    make_self_calinput_check(selfcal_modes,selfcal_solint,selfcal_interp,selfcal_niter,selfcal_mgain,selfcal_data,selfcal_usemaskfile,selfcal_addcommand)
+    C2GC.make_self_calinput_check(selfcal_modes,selfcal_solint,selfcal_interp,selfcal_niter,selfcal_mgain,selfcal_data,selfcal_usemaskfile,selfcal_addcommand)
 
     # being conservative delete the model in the MS dataset
     #
-    delmodel(MSFILE,homedir)
+    C2GC.delmodel(MSFILE,homedir)
 
     # essential for applying calibration in CASA
     #
@@ -252,14 +254,14 @@ if do_selfcal:
 
         # get the full set of imaging parameter
         #
-        default_imaging_para        = get_wsclean_para()
-        full_set_of_wsclean_para_ma = concat_dic(default_imaging_para,additional_wsclean_para_ma)
+        default_imaging_para        = C2GC.get_wsclean_para()
+        full_set_of_wsclean_para_ma = C2GC.concat_dic(default_imaging_para,additional_wsclean_para_ma)
 
 
         # Generates a mask file
         #
         outname     = 'MKMASK'+str(sc_marker)
-        mask_file,tot_flux_model,std_resi  = masking(MSFILE,outname,homedir,full_set_of_wsclean_para_ma,sc_marker,dodelmaskimages)
+        mask_file,tot_flux_model,std_resi  = C2GC.masking(MSFILE,outname,homedir,full_set_of_wsclean_para_ma,sc_marker,dodelmaskimages)
 
 
         # here we collect information on the model, the noise etc.
@@ -292,17 +294,17 @@ if do_selfcal:
         additional_wsclean_para_sc['-fits-mask']                = homedir+mask_file
 
         if len(selfcal_add_wsclean_command.keys()) > 0:
-            additional_wsclean_para_sc = concat_dic(additional_wsclean_para_sc,selfcal_add_wsclean_command)
+            additional_wsclean_para_sc = C2GC.concat_dic(additional_wsclean_para_sc,selfcal_add_wsclean_command)
         
         # get the full set of imaging parameter
         #
-        default_imaging_para        = get_wsclean_para()
-        full_set_of_wsclean_para_sc = concat_dic(default_imaging_para,additional_wsclean_para_sc)
+        default_imaging_para        = C2GC.get_wsclean_para()
+        full_set_of_wsclean_para_sc = C2GC.concat_dic(default_imaging_para,additional_wsclean_para_sc)
 
         # Add model into the MS file
         #
         outname        = 'MODIM'+str(sc_marker)
-        images         = make_image(MSFILE,outname,homedir,full_set_of_wsclean_para_sc)
+        images         = C2GC.make_image(MSFILE,outname,homedir,full_set_of_wsclean_para_sc)
 
         # determine the stats of the model subtracted image
         #
@@ -311,7 +313,7 @@ if do_selfcal:
         else:
             stats_image    = outname+'-residual.fits'
 
-        selfcal_information['SC'+str(sc)]['Stats'] = get_imagestats(stats_image,homedir)
+        selfcal_information['SC'+str(sc)]['Stats'] = C2GC.get_imagestats(stats_image,homedir)
 
         # provide the entire flux density of the model
         #
@@ -320,7 +322,7 @@ if do_selfcal:
         else:
             stats_image    = outname+'-model.fits'
 
-        selfcal_information['SC'+str(sc)]['Model'] = [sum_imageflux(stats_image,homedir,threshold=0)]
+        selfcal_information['SC'+str(sc)]['Model'] = [C2GC.sum_imageflux(stats_image,homedir,threshold=0)]
 
         # need to clean up the images
         #
@@ -337,7 +339,7 @@ if do_selfcal:
 
         CALTAB  = 'SC'+str(sc_marker)+'_CALTAB_'+selfcal_modes[sc]
 
-        addgaintable, addinterp = calib_data(MSFILE,CALTAB,homedir,selfcal_solint[sc],selfcal_modes[sc],refant,selfcal_interp[sc],addgaintable,addinterp)
+        addgaintable, addinterp = C2GC.calib_data(MSFILE,CALTAB,homedir,selfcal_solint[sc],selfcal_modes[sc],refant,selfcal_interp[sc],addgaintable,addinterp)
 
         # store calibrations to account for
         # the individual calibration steps 
@@ -352,7 +354,7 @@ if do_selfcal:
         if selfcal_modes[sc] == 'p':
             figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
             plotype = 'phase'
-            pltfiles = plot_check_cal(MSFILE,homedir,plotype,figurename)
+            pltfiles = C2GC.plot_check_cal(MSFILE,homedir,plotype,figurename)
             #
             # move the images
             for im in pltfiles:
@@ -361,11 +363,11 @@ if do_selfcal:
         if selfcal_modes[sc] == 'ap':
             figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
             plotype = 'phase'
-            pltfiles = plot_check_cal(MSFILE,homedir,plotype,figurename)
+            pltfiles = C2GC.plot_check_cal(MSFILE,homedir,plotype,figurename)
             #
             figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
             plotype = 'amp'
-            pltfiles = plot_check_cal(MSFILE,homedir,plotype,figurename)
+            pltfiles = C2GC.plot_check_cal(MSFILE,homedir,plotype,figurename)
             # move the images
             for im in pltfiles:
                 shutil.move(im,homedir+scdir)
@@ -373,12 +375,13 @@ if do_selfcal:
 
         # being conservative delete the model in the MS dataset
         #
-        delmodel(MSFILE,homedir)
+        C2GC.delmodel(MSFILE,homedir)
 
     # store casa log file to current directory 
     #
-    current_casa_log = find_CASA_logfile(checkdir='HOME',homedir='')
-    shutil.move(current_casa_log,homedir)    
+    current_casa_log = C2GC.find_CASA_logfile(checkdir='HOME',homedir='')
+    if len(current_casa_log) > 0:
+        shutil.move(current_casa_log,homedir)    
 
 
 # ============================================================================================================
@@ -413,16 +416,16 @@ if dofinal_image:
     #
 
     if len(finalimaging_add_wsclean_command.keys()) > 0:
-            additional_wsclean_para = concat_dic(additional_wsclean_para,finalimaging_add_wsclean_command)
+            additional_wsclean_para = C2GC.concat_dic(additional_wsclean_para,finalimaging_add_wsclean_command)
 
     # get the full set of imaging parameter
     #
-    default_imaging_para        = get_wsclean_para()
-    full_set_of_wsclean_para    = concat_dic(default_imaging_para,additional_wsclean_para)
+    default_imaging_para        = C2GC.get_wsclean_para()
+    full_set_of_wsclean_para    = C2GC.concat_dic(default_imaging_para,additional_wsclean_para)
 
     # produce the final image
     #
-    images = make_image(MSFILE,outname,homedir,full_set_of_wsclean_para)
+    images = C2GC.make_image(MSFILE,outname,homedir,full_set_of_wsclean_para)
 
     # get stats 
     #
@@ -432,14 +435,14 @@ if dofinal_image:
     for rsidat in get_residual_files:
         resi_file_name = rsidat.replace(homedir,'')
         file_key       = 'Stats_'+rsidat.replace(homedir,'').replace(outname,'').replace('residual.fits','').replace('-','')
-        selfcal_information['FINALIMAGES'][file_key] = get_imagestats(resi_file_name,homedir)
+        selfcal_information['FINALIMAGES'][file_key] = C2GC.get_imagestats(resi_file_name,homedir)
 
     # run cataloger and source finding
     #
     if fim_chan_out > 1:
         final_image    = outname+'-MFS-image.fits'
-    homedir,pybdsf_dir,pybdsf_log = cataloging_fits(final_image,homedir)
-    pybdsf_info = get_info_from_pybdsflog(pybdsf_log,pybdsf_dir+'/',homedir+'/')
+    homedir,pybdsf_dir,pybdsf_log = C2GC.cataloging_fits(final_image,homedir)
+    pybdsf_info = C2GC.get_info_from_pybdsflog(pybdsf_log,pybdsf_dir+'/',homedir+'/')
 
     # collect information on the model, the noise etc.
     #
@@ -460,6 +463,6 @@ if dofinal_image:
 #
 self_cal_info = 'FINAL_SC_IMAGE_'+source_name+'_SELFCALINFO'+fim_imagedir_ext+'.json'
 if len(self_cal_info) > 0:
-    save_to_json(selfcal_information,self_cal_info,homedir)
+    C2GC.save_to_json(selfcal_information,self_cal_info,homedir)
 
 print('finish !')

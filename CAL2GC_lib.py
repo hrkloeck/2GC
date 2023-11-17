@@ -540,7 +540,10 @@ def find_CASA_logfile(checkdir='HOME',homedir=''):
 
     user_home_dir  = os.environ[checkdir]
     casa_log_files = sorted(glob.glob(user_home_dir+'/casa*log'), key=os.path.getmtime)
-    latest_logfile = casa_log_files[-1]
+    if len(casa_log_files) > 0:
+        latest_logfile = casa_log_files[-1]
+    else:
+        latest_logfile = ''
 
     return latest_logfile
 
