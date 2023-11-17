@@ -61,8 +61,8 @@ import CAL2GC_lib as C2GC
 # =========================================
 # paramter pre-definition
 #
-selfcal_add_wsclean_command      = OrderedDict()
-finalimaging_add_wsclean_command = OrderedDict()
+selfcal_add_wsclean_command      = {} #OrderedDict()
+finalimaging_add_wsclean_command = {} #OrderedDict()
 # =========================================
 
 # =========================================
@@ -200,7 +200,7 @@ if doapply_precal:
 #  DO NOT EDIT BOYOND UNLESS YOU KNOW WHAT YOU ARE DOING
 # ============================================================================================================
 
-selfcal_information  = OrderedDict()
+selfcal_information  = {} #OrderedDict()
 
 # Get the source_name
 source_name   = list(get_some_info(MSFILE,homedir))[0]
@@ -235,7 +235,7 @@ if do_selfcal:
 
         # set imaging parameter for the masking
         #
-        additional_wsclean_para_ma = OrderedDict()
+        additional_wsclean_para_ma = {} #OrderedDict()
         additional_wsclean_para_ma['-data-column']              = selfcal_data[sc]
         additional_wsclean_para_ma['-size ']                    = str(imsize)+' '+str(imsize)
         additional_wsclean_para_ma['-scale']                    = str(bin_size)+'asec'
@@ -278,7 +278,7 @@ if do_selfcal:
 
         # set imaging parameter for model generation
         #
-        additional_wsclean_para_sc = OrderedDict()
+        additional_wsclean_para_sc = {} #OrderedDict()
         additional_wsclean_para_sc['-data-column']              = selfcal_data[sc]
         additional_wsclean_para_sc['-size ']                    = str(imsize)+' '+str(imsize)
         additional_wsclean_para_sc['-scale']                    = str(bin_size)+'asec'
@@ -398,7 +398,7 @@ if dofinal_image:
 
     # Set the imaging parameters
     #
-    additional_wsclean_para = OrderedDict()
+    additional_wsclean_para = {} #OrderedDict()
     #
     additional_wsclean_para['-data-column']              = fim_data
     additional_wsclean_para['-size ']                    = str(fim_imsize)+' '+str(fim_imsize)
