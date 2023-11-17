@@ -203,7 +203,7 @@ if doapply_precal:
 selfcal_information  = {} #OrderedDict()
 
 # Get the source_name
-source_name   = list(get_some_info(MSFILE,homedir))[0]
+source_name   = list(C2GC.get_some_info(MSFILE,homedir))[0]
 
 # ============================================================================================================
 # =========  S E L F - C A L I B R A T I O N process starts here 
