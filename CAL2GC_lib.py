@@ -426,7 +426,7 @@ def masking(MSFILE,outname,homedir,wsclean_para_ma,sc_marker=0,dodelmaskimages=F
         shutil.move(im,homedir+scdir)
 
     if dodelmaskimages == True:
-            delimages = 'rm -fr '+homedir+scdir+fitsoutput_mask+'*'
+            delimages = 'rm -fr '+homedir+scdir
             os.system(delimages)
 
 
@@ -473,7 +473,7 @@ def plot_check_cal(MSFILE,homedir,plotype,figurename):
     shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared std --dir '+homedir+' --suffix '+figurename+' '+MSFILE
     os.system(shadeit)
 
-    get_files = glob.glob(homedir+'*'+figurename+'.png')
+    get_files = glob.glob(homedir+'*'+figurename+'*.png')
 
     return get_files
 
