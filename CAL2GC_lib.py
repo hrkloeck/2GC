@@ -467,10 +467,10 @@ def plot_check_cal(MSFILE,homedir,plotype,figurename):
     """
     """
     # plot mean of the corrected data and the model
-    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared mean --dir '+homedir+' --suffix '+figurename+' '+MSFILE
+    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared mean --dir '+homedir+' --suffix '+figurename+' '+homedir+MSFILE
     os.system(shadeit)
     # plot the std 
-    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared std --dir '+homedir+' --suffix '+figurename+' '+MSFILE
+    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared std --dir '+homedir+' --suffix '+figurename+' '+homedir+MSFILE
     os.system(shadeit)
 
     get_files = glob.glob(homedir+'*'+figurename+'*.png')
