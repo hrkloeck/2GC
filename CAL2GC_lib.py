@@ -426,7 +426,7 @@ def masking(MSFILE,outname,homedir,wsclean_para_ma,sc_marker=0,dodelmaskimages=F
         shutil.move(im,homedir+scdir)
 
     if dodelmaskimages == True:
-            delimages = 'rm -fr '+homedir+scdir
+            delimages = 'rm -fr '+homedir+scdir+fitsoutput_mask+'*'
             os.system(delimages)
 
 
