@@ -13,6 +13,7 @@ import sys
 import shutil
 import glob
 import json
+import copy
 
 import casatasks
 import numpy as np
@@ -305,8 +306,11 @@ def calib_data(MSFILE,CALTAB,homedir,solint,calmode,refant,inter='nearest',addga
 
     # optain the calibration sequence
     #
-    addgaintable.append(caltab)
-    addinterp.append(inter)
+    n_addgaintable = copy.copy(addgaintable)
+    n_addinterp    = copy.copy(addinterp)
+
+    n_addgaintable.append(caltab)
+    n_addinterp.append(inter)
     
 
     # need to check if calib table is produced
@@ -318,7 +322,7 @@ def calib_data(MSFILE,CALTAB,homedir,solint,calmode,refant,inter='nearest',addga
 
     casatasks.applycal(vis=msfile,gaintable=addgaintable,interp=addinterp,parang=False, calwt=False, flagbackup=False)
 
-    return addgaintable,addinterp
+    return n_addgaintable,n_addinterp
 
 
 def apply_calibration(MSFILE,MSOUTPUT,homedir,fieldid,gaintable=[],interp=[]):
