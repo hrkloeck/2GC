@@ -320,7 +320,7 @@ def calib_data(MSFILE,CALTAB,homedir,solint,calmode,refant,inter='nearest',addga
         print('Seems that the calibration table has not been proceed',caltab)
         sys.exit(-1)
 
-    casatasks.applycal(vis=msfile,gaintable=addgaintable,interp=addinterp,parang=False, calwt=False, flagbackup=False)
+    casatasks.applycal(vis=msfile,gaintable=n_addgaintable,interp=n_addinterp,parang=False, calwt=False, flagbackup=False)
 
     return n_addgaintable,n_addinterp
 
