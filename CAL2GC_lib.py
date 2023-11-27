@@ -341,53 +341,6 @@ def apply_calibration(MSFILE,MSOUTPUT,homedir,fieldid,gaintable=[],interp=[]):
 
 
 
-#def masking_old(MSFILE,outname,homedir,weighting=-0.5,imsize=256,bin_size=0.7,niter=1,data='DATA',mgain=0.8,sc_marker=0,dodelmaskimages=False):
-#    """
-#    generates a fits image mask
-#    """
-#
-#    # Generate an image via (wsclean)
-#    #
-#    image_files         = make_image(MSFILE,outname,homedir,weighting,imsize,bin_size,niter,data,mgain,maskfile='',updatemodel=False,add_command='')
-#    
-#    if len(image_files) > 5:
-#        for f in image_files:
-#            if f == homedir+outname+'-MFS-image.fits':
-#                # indicate image to be used for source finiding
-#                MFS_image      = image_files[image_files.index(homedir+outname+'-MFS-image.fits')].replace(homedir,'')
-#    else:
-#        MFS_image      = image_files[image_files.index(homedir+outname+'-image.fits')].replace(homedir,'')
-#
-#    # source finding useing Jonah's software and setting (pybdsf)
-#    pybdsf_dir,region_file,tot_flux_model,std_resi  = make_region_file(MFS_image,homedir)
-#
-#    # copy region file 
-#    #
-#    shutil.copy(homedir+pybdsf_dir+'/'+region_file,homedir)
-#
-#
-#    # generate FITS image mask
-#    #
-#    delete_ms_images = True
-#    fitsoutput_mask  = 'SC'+str(sc_marker)+'_MASK'
-#    mask_fits_file   = make_mask(MFS_image,region_file,fitsoutput_mask,sc_marker,homedir,delete_ms_images)
-#
-#
-#    # clean up all the files
-#    #
-#    scdir = 'SC_'+str(sc_marker)+'_MK'+'/'
-#    os.mkdir(homedir+scdir)
-#    get_files = glob.glob(homedir+outname+'*')
-#    for im in get_files:
-#        shutil.move(im,homedir+scdir)
-#
-#    if dodelmaskimages == True:
-#            delimages = 'rm -fr '+homedir+scdir
-#            os.system(delimages)
-#
-#
-#    return mask_fits_file,tot_flux_model,std_resi
-
 
 def masking(MSFILE,outname,homedir,wsclean_para_ma,sc_marker=0,dodelmaskimages=False):
     """

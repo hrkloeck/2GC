@@ -30,6 +30,7 @@ import sys
 import shutil
 import glob
 import json
+import copy
 #
 import casatasks
 import numpy as np
@@ -346,7 +347,7 @@ if do_selfcal:
         # to be applied 
         #
         selfcal_information['SC'+str(sc)]['calip_setting'] = [selfcal_niter[sc],selfcal_data[sc],selfcal_mgain[sc],selfcal_solint[sc],selfcal_modes[sc]]
-        selfcal_information['SC'+str(sc)]['calip_inter']   = [addgaintable,addinterp]
+        selfcal_information['SC'+str(sc)]['calip_inter']   = [copy.copy(addgaintable),copy.copy(addinterp)]
 
 
         # produce bsl shadems images
