@@ -100,7 +100,7 @@ def main():
                       help='Splitt the data into a new file [default False].')
 
     parser.add_option('--NOFGINFO', dest='fginfo', action='store_false',default=True,
-                      help='Provide CASA FG information [see casa log file].')
+                      help='Provide no CASA FG information [default runs casa, see casa log file].')
 
     parser.add_option('--SPWD', dest='spwd', default='', type=str,
                       help='Choose which spectral windows to split [default use all].')
