@@ -32,19 +32,19 @@ def apply_calibration(MSFILE,homedir,gaintable=[],interp=[]):
 
     # https://casadocs.readthedocs.io/en/v6.2.0/api/tt/casatasks.calibration.applycal.html
 
-    msfile    = homedir + MSFILE
+    msfile    = MSFILE
 
     if len(gaintable) > 0:
         # apply all the calibration
         casatasks.applycal(vis=msfile,gaintable=gaintable,interp=interp,parang=False, calwt=False, flagbackup=False)
 
 
-def split_data(MSFILE,MSOUTPUT,homedir,fieldid,spw=''):
+def split_data(MSFILE,MSOUTPUT,homedir,fieldid,spw):
     """
     split the data
     """
 
-    msfile    = homedir + MSFILE
+    msfile    = MSFILE
     outmsfile = homedir + MSOUTPUT
 
     # generates a new dataset with corrected DATA column 
@@ -99,6 +99,12 @@ def main():
     parser.add_option('--DOSPLIT', dest='dosplit', action='store_true',default=False,
                       help='Splitt the data into a new file [default False].')
 
+    parser.add_option('--NOFGINFO', dest='fginfo', action='store_false',default=True,
+                      help='Provide CASA FG information [see casa log file].')
+
+    parser.add_option('--SPWD', dest='spwd', default='', type=str,
+                      help='Choose which spectral windows to split [default use all].')
+
     parser.add_option('--FIELDID', dest='fieldid', default=0, type=int,
                       help='Field ID [default 0].')
 
@@ -124,20 +130,24 @@ def main():
     doapply             = opts.doapply
     dosplit             = opts.dosplit
     fieldid             = opts.fieldid
+    fginfo              = opts.fginfo
+    spwd                = opts.spwd
     cwd                 = opts.cwd        # used to write out information us only for container
-
-    MSOUTPUT            = MSFILE.replace('.ms','split.ms')
+    MSOUTPUT            = MSFILE.replace('.ms','_split.ms')
 
 
     if doapply:
         print('\n=== Apply calibration ===\n')
         if caltab != '[]' and calinterp != '[]': 
-                gaintable  = list(caltab)
-                interp     = list(calinterp)
+                gaintable  = eval(caltab)
+                interp     = eval(calinterp)
                 if len(gaintable) != len(interp):
                     print('Caution --CAL_TAB and --CAL_INTERPOL have different size. ',caltab,calinterp)
                     sys.exit(-1)
 
+                print('CASA gaintable input: ',gaintable)
+                print('CASA interp input   : ',interp)
+                #
                 apply_calibration(MSFILE,cwd,gaintable,interp)
         else:
             print('Caution --CAL_TAB and --CAL_INTERPOL not defined. ',caltab,calinterp)
@@ -145,15 +155,21 @@ def main():
 
     if dosplit:
         print('\n=== Split Data ===\n')
-        split_homedir, split_MSOUTPUT = split_data(MSFILE,MSOUTPUT,homedir,fieldid,spw)
+        if len(spwd) > 0:
+            print('\n- SPWD: ',spwd)
+
+        split_homedir, split_MSOUTPUT = split_data(MSFILE,MSOUTPUT,'',fieldid,spwd)
         MSFILE = split_MSOUTPUT
         
 
-    # provide info about the total flagging of the dataset
-    #
-    cwdMSFILE = cwd + MSFILE
-    casatasks.flagdata(vis=cwdMSFILE, mode='summary')
+    if fginfo:
+        print('\n=== Determine FG Information ===\n')
 
+        # provide info about the total flagging of the dataset
+        #
+        cwdMSFILE = MSFILE
+        casatasks.flagdata(vis=cwdMSFILE, mode='summary')
+        print('\n- see CASA log file')
 
     # store casa log file to current directory 
     #
