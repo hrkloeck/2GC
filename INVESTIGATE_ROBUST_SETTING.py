@@ -95,12 +95,11 @@ print('\n Use MS file: ',MSFILE)
 # General imaging paramter for the final imaging
 #
 fim_weighting       = [-2,-1,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1,2]
-fim_weighting       = -0.5
 fim_imsize          = 8192
 fim_bin_size        = 0.7
 #
 fim_niter           = 300000
-fim_data            = 'CORRECTED_DATA'
+fim_data            = 'DATA'
 fim_mgain           = 0.8
 fim_chan_out        = 16
 fim_spwds           = '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
@@ -127,25 +126,13 @@ selfcal_information  = {}
 source_name   = list(C2GC.get_some_info(MSFILE,homedir))[0]
 
 
-
-# ============================================================================================================
-# =========  F I N A L  I M A G I N G 
-# ============================================================================================================
-#
-#
-
-# Get the source_name
-source_name          = list(get_some_info(MSFILE,homedir))[0]
-
-selfcal_information  = OrderedDict()
-
 for robust in fim_weighting:
 
     # ============================================================================================================
     # =========   I M A G I N G 
     # ============================================================================================================
 
-    print('Do imaging with robust ',robust)
+    print('\n\n=== do imaging with robust ',robust)
 
     # that for the time being ok, but need source name here
     #
@@ -185,7 +172,7 @@ for robust in fim_weighting:
 
     # get stats 
     #
-    get_residual_files = glob.glob(homedir+outname+'*'+'residual.fits')
+    get_residual_files = glob.glob(homedir+outname+'*'+'residual.fits',key=os.path.getmtime)
     selfcal_information['FINALIMAGES'] = {}
     #
     for rsidat in get_residual_files:
@@ -208,7 +195,7 @@ for robust in fim_weighting:
     #
     scdir = 'FINAL_'+str(robust)+'_IMAGES'+fim_imagedir_ext+'/'
     os.mkdir(homedir+scdir)
-    get_files = glob.glob(homedir+outname+'*')
+    get_files = glob.glob(homedir+outname+'*',key=os.path.getmtime)
     for im in get_files:
         shutil.move(im,homedir+scdir)
      

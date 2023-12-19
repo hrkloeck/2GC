@@ -243,7 +243,7 @@ def make_image(MSFILE,outname,homedir,wsc_para):
 
     os.system(wsclean_command)
     
-    return glob.glob(homedir+outname+'*fits')
+    return glob.glob(homedir+outname+'*fits',key=os.path.getmtime)
 
 
 def get_wsclean_para():
@@ -378,7 +378,7 @@ def masking(MSFILE,outname,homedir,wsclean_para_ma,sc_marker=0,dodelmaskimages=F
     #
     scdir = 'SC_'+str(sc_marker)+'_MK'+'/'
     os.mkdir(homedir+scdir)
-    get_files = glob.glob(homedir+outname+'*')
+    get_files = glob.glob(homedir+outname+'*',key=os.path.getmtime)
     for im in get_files:
         shutil.move(im,homedir+scdir)
 
@@ -430,7 +430,7 @@ def plot_check_cal(MSFILE,homedir,plotype,figurename):
     shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared std --dir '+homedir+' --suffix '+figurename+' '+homedir+MSFILE
     os.system(shadeit)
 
-    get_files = glob.glob(homedir+'*'+figurename+'*.png')
+    get_files = glob.glob(homedir+'*'+figurename+'*.png',key=os.path.getmtime)
 
     return get_files
 
