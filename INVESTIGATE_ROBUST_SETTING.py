@@ -48,8 +48,6 @@ import CAL2GC_lib as C2GC
 #    git clone https://github.com/JonahDW/Image-processing.git
 #    git clone https://github.com/hrkloeck/DASKMSWERKZEUGKASTEN.git
 #    git clone https://github.com/hrkloeck/2GC.git
-# 
-# 2. copy the script  cp 2GC/*py .
 #
 # 3. copy your MS file into the directory
 #
@@ -172,7 +170,7 @@ for robust in fim_weighting:
 
     # get stats 
     #
-    get_residual_files = glob.glob(homedir+outname+'*'+'residual.fits',key=os.path.getmtime)
+    get_residual_files = sorted(glob.glob(homedir+outname+'*'+'residual.fits'),key=os.path.getmtime)
     selfcal_information['FINALIMAGES'] = {}
     #
     for rsidat in get_residual_files:
@@ -195,7 +193,7 @@ for robust in fim_weighting:
     #
     scdir = 'FINAL_'+str(robust)+'_IMAGES'+fim_imagedir_ext+'/'
     os.mkdir(homedir+scdir)
-    get_files = glob.glob(homedir+outname+'*',key=os.path.getmtime)
+    get_files = sorted(glob.glob(homedir+outname+'*'),key=os.path.getmtime)
     for im in get_files:
         shutil.move(im,homedir+scdir)
      

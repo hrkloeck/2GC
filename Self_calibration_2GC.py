@@ -329,7 +329,7 @@ if do_selfcal:
         #
         scdir = 'SC_'+str(sc_marker)+'_MODEL'+'/'
         os.mkdir(homedir+scdir)
-        get_files = glob.glob(homedir+outname+'*',key=os.path.getmtime)
+        get_files = sorted(glob.glob(homedir+outname+'*'),key=os.path.getmtime)
         for im in get_files:
             shutil.move(im,homedir+scdir)
 
@@ -430,7 +430,7 @@ if dofinal_image:
 
     # get stats 
     #
-    get_residual_files = glob.glob(homedir+outname+'*'+'residual.fits',key=os.path.getmtime)
+    get_residual_files = sorted(glob.glob(homedir+outname+'*'+'residual.fits'),key=os.path.getmtime)
     selfcal_information['FINALIMAGES'] = {}
     #
     for rsidat in get_residual_files:
@@ -453,7 +453,7 @@ if dofinal_image:
     #
     scdir = 'FINAL_SC'+str(len(selfcal_modes))+'_IMAGES'+fim_imagedir_ext+'/'
     os.mkdir(homedir+scdir)
-    get_files = glob.glob(homedir+outname+'*',key=os.path.getmtime)
+    get_files = sorted(glob.glob(homedir+outname+'*'),key=os.path.getmtime)
     for im in get_files:
         shutil.move(im,homedir+scdir)
      
