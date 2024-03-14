@@ -32,5 +32,4 @@ singularity build --fakeroot CONTAINER_NAME.simg singularity.meerkat_hrk.recipe_
 
 run the thing with (CAUTION YOU NEED EXACTLY THAT BINDING):
 
-singularity exec --bind ${PWD}:/data CONTAINER.simg python /data/Self_calibration_2GC.py
-
+singularity exec --bind ${PWD}:/data CONTAINER.simg python /data/2GC/Self_calibration_2GC.py /data/ MS_FILE_NAME
