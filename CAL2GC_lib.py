@@ -18,12 +18,14 @@ import copy
 import casatasks
 import numpy as np
 
-#from collections import OrderedDict
 
 #
 # LIBS
 #
 
+global python_def
+
+python_def = 'python3'
 
 # this class is for json dump
 # https://stackoverflow.com/questions/75475315/python-return-json-dumps-got-error-typeerror-object-of-type-int32-is-not-json
@@ -50,6 +52,15 @@ def save_to_json(data,dodatainfoutput,homedir):
         print(json_dumps_str, file=fout)
     return homedir + dodatainfoutput
 
+def get_json(filename,homedir=''):
+    """
+    get json info
+    """
+
+    with open(homedir+filename) as f:
+        jsondata = json.load(f)
+
+    return jsondata
 
 
 def get_list_index(list,value):
@@ -109,7 +120,7 @@ def make_region_file(imagename,homedir=''):
     filename       = homedir + imagename
     sfinding_dir   = homedir + imagename.replace('.fits','').replace('.FITS','')
     pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
-    source_finding = 'python ' + homedir + 'Image-processing/sourcefinding.py mask ' + filename + ' -o fits:srl kvis --plot'
+    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py mask ' + filename + ' -o fits:srl kvis --plot'
 
     # start the source finding stuff from Jonah
     # using the mask setting
@@ -147,7 +158,7 @@ def cataloging_fits(imagename,homedir=''):
     #
     filename       = homedir + imagename
     pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
-    source_finding = 'python ' + homedir + 'Image-processing/sourcefinding.py cataloging ' + filename + ' -o fits:srl kvis --plot'
+    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py cataloging ' + filename + ' -o fits:srl kvis --plot'
 
     # start the source finding stuff from Jonah
     # using the mask setting
@@ -246,29 +257,19 @@ def make_image(MSFILE,outname,homedir,wsc_para):
     return sorted(glob.glob(homedir+outname+'*fits'),key=os.path.getmtime)
 
 
-def get_wsclean_para():
+
+def get_selfcal_default_para(filename,homedir):
     """
     """
-    wsclean_para = {} #OrderedDict()
-    
-    wsclean_para['-j']                     = 14
-    wsclean_para['-mem']                   = 75
-    wsclean_para['-reorder']               = ''
-    wsclean_para['-parallel-reordering']   = 8
-    wsclean_para['-parallel-gridding']     = 8
-    wsclean_para['-gridder']               = 'wgridder'
-    wsclean_para['-weighting-rank-filter'] = 3
-    wsclean_para['-auto-mask']             = 3
-    wsclean_para['-auto-threshold']        = 0.3
+    full_input_information = get_json(filename,homedir)['SELFCAL_PARAMETER']
+    selfcal_para = full_input_information
 
-    wkeys = wsclean_para.keys()
-
-    return wsclean_para
+    return selfcal_para
 
 def concat_dic(dic_a,dic_b):
     """
     """
-    c_dic = {} #OrderedDict()
+    c_dic = {}
     
     for w in dic_a.keys():
         c_dic[w] = dic_a[w]
@@ -289,7 +290,7 @@ def delmodel(MSFILE,homedir):
     return []
 
 
-def calib_data(MSFILE,CALTAB,homedir,solint,calmode,refant,inter='nearest',addgaintable=[],addinterp=[]):
+def calib_data(MSFILE,CALTAB,homedir,solint,calmode,refant,uvrange,inter='nearest',addgaintable=[],addinterp=[]):
     """
     calibrates the data and applies it
     """
@@ -297,11 +298,8 @@ def calib_data(MSFILE,CALTAB,homedir,solint,calmode,refant,inter='nearest',addga
     msfile = homedir + MSFILE
     caltab = homedir + CALTAB
 
-    #refant  = 'm061'
-    myuvrange = '>100m'
 
-
-    casatasks.gaincal(vis=msfile,uvrange=myuvrange,caltable=caltab,gaintype='T',solnorm=False,solint=solint,refant=refant,\
+    casatasks.gaincal(vis=msfile,uvrange=uvrange,caltable=caltab,gaintype='T',solnorm=False,solint=solint,refant=refant,\
                           calmode=calmode,combine='',minsnr=3,gaintable=addgaintable,interp=addinterp)
 
     # optain the calibration sequence
@@ -434,6 +432,7 @@ def plot_check_cal(MSFILE,homedir,plotype,figurename):
 
     return get_files
 
+
 def get_imagestats(imagename,homedir):
     """
     provide stats information of the image 
@@ -503,6 +502,23 @@ def find_CASA_logfile(checkdir='HOME',homedir=''):
         latest_logfile = ''
 
     return latest_logfile
+
+
+def enlarge_selcal_input(selfcal_modes,scal_input_info):
+    """
+    enlarge the input with the latest entry of the data 
+    """
+    if len(selfcal_modes) != len(scal_input_info):
+        scal_new_info = []
+        for i in range(len(selfcal_modes)):
+            if i >= len(scal_input_info)-1:
+                scal_new_info.append(scal_input_info[-1])
+            else:
+                scal_new_info.append(scal_input_info[i])
+    else:
+      scal_new_info = copy.copy(scal_input_info)
+
+    return scal_new_info
 
 
 def make_self_calinput_check(selfcal_modes,selfcal_solint,selfcal_interp,selfcal_niter,selfcal_mgain,selfcal_data,selfcal_usemaskfile,selfcal_addcommand):
