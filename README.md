@@ -1,35 +1,77 @@
 # 2GC
+
 Self-calibration of radio interferometer dataset 
 
-Please note that this is a working version for the moment and all the wsclean parameter are hardly coded in the code!!!
-Having this in mind we expect 16 spwd being present in the dataset.
+This includes imaging (wsclean), source finding (pybdfs) to generate a local sky model (LSM), 
+and calibration (casa task) steps (some phase and a final amplitude calibration). 
 
+The tool also allows to just single image the MS-data set (default).
 
+# Setting up the infrastructure in your directory 
 
-# How to run the self-calibration 
+mkdir YOUR_NEW_DIR
+copy the MS data file into the directory
 
-1. Prepare the working directory
-
-    git clone https://github.com/JonahDW/Image-processing.git
+git clone https://github.com/JonahDW/Image-processing.git
    
-    git clone https://github.com/hrkloeck/DASKMSWERKZEUGKASTEN.git
+git clone https://github.com/hrkloeck/DASKMSWERKZEUGKASTEN.git
 
-    git clone https://github.com/hrkloeck/2GC.git
+git clone https://github.com/hrkloeck/2GC.git
 
-2. cp 2GC/*py into your working directory
+# Running the self-calibration 
 
-3. copy your MS file into your working directory
+The self-calibration is configured in the IMAGING_2GC_DEFAULTS.json default file in addition to 
+some of the imaging parameter of wsclean.
 
-4. Edit the Self_calibration_2GC.py file      # THIS WILL CHANGE IN THE FUTURE
 
-Start the singularity (important with bind) 
+singularity exec --bind ${PWD}:/data CONTAINER.simg python3 /data/2GC/IMAGING_and_2GC.py
 
-use HRK_CASA_6.5_DASK_WSC3.3.simg (for local people at the MPIfR)
+```
+Usage: IMAGING_and_2GC.py [options]
 
-or if you want to build it by your own (need fakeroot privileges)
+Options:
+  -h, --help            show this help message and exit
+  --MS_FILE=MSFILE      MS - file name e.g. 1491291289.1ghz.1.1ghz.4hrs.ms
+  --WORK_DIR=CWD        Points to the working directory (e.g. useful for
+                        containers)
+  --IMAGING_DEFAULT_FILE=IMINPUTJSON
+                        Input imaging default file name in JSON format
+                        [default: IMAGING_2GC_DEFAULTS.json].
+  --IMAG_PARA_DATACOLUMN=DATACOL
+                        Data column for imaging [default: DATA] also possible
+                        CORRECTED_DATA
+  --IMAG_PARA_IMSTOKES=IMSTOKES
+                        Stokes output image [default I]
+  --IMAG_PARA_IMSIZE=IMSIZE
+                        imsize in pixel [default 8192 pixel]
+  --IMAG_PARA_SCALE=IMSCALE
+                        scale in arcsec [default: 1]
+  --IMAG_PARA_ROBUST=ROBUST
+                        robust weighting [default -0.5]
+  --IMAG_PARA_NITER=IMNITER
+                        niter parameter for cleaning [default 1]
+  --IMAG_PARA_THRESHOLD=IMTHRESHOLD
+                        threshold parameter for cleaning [default 1E-6]
+  --IMAG_PARA_SPWDS=IMSPWDS
+                        default '0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15'
+  --DOSELFCAL           switch to include 2GC self-calibration. [default no
+                        self-calibration]
+  --DOIMAGING           switch to exclude final imaging. [default do final
+                        imaging]
+  --DODELMAKSIMAGES     delete mask images for LSM modeling. [default delete
+                        them]
+```
+
+Example to run a self-calibration of useing only 3 spectral windows
+
+```
+singularity exec --bind ${PWD}:/data  python3 /data/2GC/IMAGING_and_2GC.py
+ --MS_FILE=MS_FILE --WORK_DIR=/data/ --IMAG_PARA_IMSIZE=512 --IMAG_PARA_SPWDS="1,2,3," --DOSELFCAL --IMAG_PARA_ROBUST=0.3
+```
+
+# Building the container
 
 singularity build --fakeroot CONTAINER_NAME.simg singularity.meerkat_hrk.recipe_NEW_JUNE
 
-run the thing with (CAUTION YOU NEED EXACTLY THAT BINDING):
 
-singularity exec --bind ${PWD}:/data CONTAINER.simg python /data/2GC/Self_calibration_2GC.py /data/ MS_FILE_NAME
+Enjoy !
