@@ -222,7 +222,7 @@ def main():
     additional_imaging_para = C2GC.get_json(iminputjson,homedir+'2GC/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
     #
     if len(additional_imaging_para) > 0:
-        full_default_wsclean_para = C2GC.concat_dic(default_imaging_para,additional_imaging_para)
+        full_default_wsclean_para = C2GC.concat_dic(default_wsclean_para,additional_imaging_para)
     else:
         full_default_wsclean_para = default_wsclean_para
     # ===
