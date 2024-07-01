@@ -96,6 +96,9 @@ def main():
     parser.add_option('--IMAG_PARA_NITER', dest='imniter', default=1, type=int,
                       help='niter parameter for cleaning [default 1]')
 
+    parser.add_option('--IMAG_PARA_GAIN', dest='imagegain', default=0.1, type=float,
+                      help='clean gain parameter [default 0.1]')
+
     parser.add_option('--IMAG_PARA_THRESHOLD', dest='imthreshold', default=1E-6, type=float,
                       help='threshold parameter for cleaning [default 1E-6]')
 
@@ -128,6 +131,7 @@ def main():
     imstokes        = opts.imstokes
 
     imniter         = opts.imniter
+    imagegain       = opts.imagegain
 
     imthreshold     = opts.imthreshold
 
@@ -210,7 +214,7 @@ def main():
     additional_wsclean_para['-scale']                 = str(bin_size)+'asec'
     additional_wsclean_para['-pol']                   = imstokes
     additional_wsclean_para['-channels-out']          = str(chan_out) 
-    additional_wsclean_para['-spws']                  = str(spwds) 
+    additional_wsclean_para['-spws']                  = str(spwds)
     #
     # combine the defaults 
     #
@@ -254,6 +258,7 @@ def main():
         selfcal_data         = C2GC.enlarge_selcal_input(selfcal_modes,default_selfcal_para['selfcal_data'])
         selfcal_interp       = C2GC.enlarge_selcal_input(selfcal_modes,default_selfcal_para['selfcal_interp'])
         selfcal_niter        = C2GC.enlarge_selcal_input(selfcal_modes,default_selfcal_para['selfcal_niter'])
+        selfcal_gain         = C2GC.enlarge_selcal_input(selfcal_modes,default_selfcal_para['selfcal_gain'])
         selfcal_mgain        = C2GC.enlarge_selcal_input(selfcal_modes,default_selfcal_para['selfcal_mgain'])
         selfcal_usemaskfile  = C2GC.enlarge_selcal_input(selfcal_modes,default_selfcal_para['selfcal_usemaskfile'])
 
@@ -275,7 +280,6 @@ def main():
             selfcal_information['SC'+str(sc)] = {}
             sc_marker = sc
 
-
             # set imaging parameter for masking 
             #
             additional_wsclean_para_ma = {}
@@ -283,6 +287,7 @@ def main():
             additional_wsclean_para_ma['-threshold']                = str(selfcal_threshold)
             additional_wsclean_para_ma['-data-column']              = selfcal_data[sc]
             additional_wsclean_para_ma['-niter']                    = str(selfcal_niter[sc])
+            additional_wsclean_para_ma['-gain']                     = str(selfcal_gain[sc])
             additional_wsclean_para_ma['-mgain']                    = str(selfcal_mgain[sc])
             additional_wsclean_para_ma['-no-update-model-required'] = ''
             #
@@ -464,6 +469,7 @@ def main():
 
         additional_wsclean_para['-weight briggs']            = str(weighting)
         additional_wsclean_para['-niter']                    = str(imniter)
+        additional_wsclean_para['-gain']                     = str(imagegain)
         additional_wsclean_para['-threshold']                = str(imthreshold)
         additional_wsclean_para['-no-update-model-required'] = ''
         if chan_out > 1:

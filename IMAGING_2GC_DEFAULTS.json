@@ -10,7 +10,7 @@
 	    "-reorder":"",
 	    "-parallel-reordering": 8, 
 	    "-parallel-gridding": 8,
-	    "-mgain": 0.1
+	    "-mgain": 0.8
 	}
     },
     "ADD_WSCLEAN_COMMAND":{
@@ -27,6 +27,7 @@
 	"selfcal_usemaskfile": [""],
 	"selfcal_addwscleancommand": [""],
 	"selfcal_niter": [30000],
+	"selfcal_gain": [0.1],
 	"selfcal_mgain": [0.8],
 	"selfcal_threshold": 1E-6,
 	"selfcal_auto-threshold": 3,
