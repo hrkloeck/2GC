@@ -469,17 +469,12 @@ def sum_imageflux(imagename,homedir,threshold=0):
     return np.sum(im_data[selthreshold]),im_data_header['BUNIT']
 
 
-
 def get_some_info(MSFILE,homedir):
     """
     us the dask werkzeug
     """
-    dask_werkzeug_dir = homedir+'DASKMSWERKZEUGKASTEN'
-
-    sys.path.insert(1, dask_werkzeug_dir)
-
-    import DASK_MS_WERKZEUGKASTEN as INFMS
-
+    import daskmsASTROKIT.DASK_MS_WERKZEUGKASTEN as INFMS
+    
     msfile = homedir + MSFILE
 
     msource_info  = INFMS.ms_source_info(msfile)

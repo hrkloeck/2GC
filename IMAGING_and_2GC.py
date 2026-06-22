@@ -57,6 +57,7 @@ import copy
 import casatasks
 import numpy as np
 import CAL2GC_lib as C2GC
+import daskmsASTROKIT.DASK_MS_WERKZEUGKASTEN as INFMS
 #
 from optparse import OptionParser
 
@@ -197,7 +198,7 @@ def main():
     selfcal_information  = {}
 
     # Get the source_name
-    source_name          = list(C2GC.get_some_info(MSFILE,homedir))[0]
+    source_name          = list(INFMS.get_some_info(MSFILE,homedir))[0]
 
     # === define the default imaging parameter
     #
