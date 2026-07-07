@@ -54,10 +54,10 @@ import glob
 import json
 import copy
 #
-import casatasks
+#import casatasks
 import numpy as np
 import CAL2GC_lib as C2GC
-import daskmsASTROKIT.DASK_MS_WERKZEUGKASTEN as INFMS
+import daskms_ASTROKIT.daskmsASTROKIT.DASK_MS_WERKZEUGKASTEN as INFMS
 #
 from optparse import OptionParser
 
@@ -198,13 +198,13 @@ def main():
     selfcal_information  = {}
 
     # Get the source_name
-    source_name          = list(INFMS.get_some_info(MSFILE,homedir))[0]
+    source_name        = list(INFMS.ms_source_info(MSFILE).keys())[0]
 
     # === define the default imaging parameter
     #
     # Get the default imaging parameter 
     #
-    default_imaging_para = C2GC.get_json(iminputjson,homedir+'2GC/')['IMAGING_DEFAULT']['wsclean_para']
+    default_imaging_para = C2GC.get_json(iminputjson,homedir+'GC2/')['IMAGING_DEFAULT']['wsclean_para']
     #
     # set some specific parameter from the input
     # 
@@ -224,7 +224,7 @@ def main():
 
     # add additional inputs from user
     #
-    additional_imaging_para = C2GC.get_json(iminputjson,homedir+'2GC/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
+    additional_imaging_para = C2GC.get_json(iminputjson,homedir+'GC2/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
     #
     if len(additional_imaging_para) > 0:
         full_default_wsclean_para = C2GC.concat_dic(default_wsclean_para,additional_imaging_para)
@@ -244,7 +244,7 @@ def main():
         #
         # Get the default selcal parameter from json file 
         #
-        default_selfcal_para = C2GC.get_json(iminputjson,homedir+'2GC/')['SELFCAL_PARAMETER'] 
+        default_selfcal_para = C2GC.get_json(iminputjson,homedir+'GC2/')['SELFCAL_PARAMETER'] 
         #
         selfcal_modes        = default_selfcal_para['selfcal_modes']
         selfcal_solint       = default_selfcal_para['selfcal_solint']
@@ -301,7 +301,7 @@ def main():
 
             # add additional inputs from user
             #
-            additional_sc_imaging_para = C2GC.get_json(iminputjson,homedir+'2GC/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
+            additional_sc_imaging_para = C2GC.get_json(iminputjson,homedir+'GC2/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
             #
             if len(additional_sc_imaging_para) > 0:
                 f_additional_wsclean_para_ma = C2GC.concat_dic(additional_wsclean_para_ma,additional_sc_imaging_para)
@@ -349,7 +349,7 @@ def main():
 
             # add additional inputs from user
             #
-            additional_sc_imaging_para = C2GC.get_json(iminputjson,homedir+'2GC/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
+            additional_sc_imaging_para = C2GC.get_json(iminputjson,homedir+'GC2/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
             #
             if len(additional_sc_imaging_para) > 0:
                 f_additional_wsclean_para_sc = C2GC.concat_dic(additional_wsclean_para_sc,additional_sc_imaging_para)
@@ -480,7 +480,7 @@ def main():
 
         # add additional inputs from user
         #
-        additional_imaging_para = C2GC.get_json(iminputjson,homedir+'2GC/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
+        additional_imaging_para = C2GC.get_json(iminputjson,homedir+'GC2/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
         #
         if len(additional_imaging_para) > 0:
                 f_additional_wsclean_para = C2GC.concat_dic(additional_wsclean_para,additional_imaging_para)

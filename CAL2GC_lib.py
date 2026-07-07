@@ -15,7 +15,7 @@ import glob
 import json
 import copy
 
-import casatasks
+#import casatasks
 import numpy as np
 
 
@@ -250,9 +250,13 @@ def make_image(MSFILE,outname,homedir,wsc_para):
         wsclean_command += ' '+ k + ' ' + str(wsc_para[k])
 
     wsclean_command += ' -name '+homedir+outname
-    wsclean_command += ' '+homedir+MSFILE
+    wsclean_command += ' '+MSFILE
 
+    print(wsclean_command)
+    
     os.system(wsclean_command)
+
+    sys.exit(-1)
     
     return sorted(glob.glob(homedir+outname+'*fits'),key=os.path.getmtime)
 
