@@ -158,7 +158,7 @@ def cataloging_fits(imagename,homedir=''):
     #
     filename       = homedir + imagename
     pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
-    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py cataloging ' + filename + ' -o fits:srl kvis --plot'
+    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py ' + filename + ' -o fits:srl ds9 --plot'
 
     # start the source finding stuff from Jonah
     # using the mask setting
@@ -251,12 +251,8 @@ def make_image(MSFILE,outname,homedir,wsc_para):
 
     wsclean_command += ' -name '+homedir+outname
     wsclean_command += ' '+MSFILE
-
-    print(wsclean_command)
     
     os.system(wsclean_command)
-
-    sys.exit(-1)
     
     return sorted(glob.glob(homedir+outname+'*fits'),key=os.path.getmtime)
 
