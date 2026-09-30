@@ -57,7 +57,7 @@ import copy
 #import casatasks
 import numpy as np
 import CAL2GC_lib as C2GC
-import daskms_ASTROKIT.daskmsASTROKIT.DASK_MS_WERKZEUGKASTEN as INFMS
+import DASK_MS_WERKZEUGKASTEN as INFMS
 #
 from optparse import OptionParser
 
@@ -75,6 +75,9 @@ def main():
 
     parser.add_option('--WORK_DIR', dest='cwd', default='',type=str,
                       help='Points to the working directory (e.g. useful for containers)')
+
+    parser.add_option('--DATA_DIR', dest='ddir', default='',type=str,
+                      help='Points to the directory where to find the MS file')
 
     parser.add_option('--IMAGING_DEFAULT_FILE', dest='iminputjson',default='IMAGING_2GC_DEFAULTS.json',type=str,
                       help='Input imaging default file name in JSON format [default: IMAGING_2GC_DEFAULTS.json].')
@@ -126,9 +129,22 @@ def main():
 
     # set the parmaters
     #
-    homedir         = opts.cwd
+    wdir            = opts.cwd
+    ddir            = opts.ddir
     MSFILE          = opts.msfile
     #
+    ms_name         = ddir + MSFILE
+    #
+
+
+    
+    # some image settings
+    #
+
+    # get seom default from the json file in 2GC directory
+    #
+    iminputjson     = opts.iminputjson
+
     imstokes        = opts.imstokes
 
     imniter         = opts.imniter
@@ -142,15 +158,9 @@ def main():
     spwds           = opts.imspwds
     datacol         = opts.datacol
 
-
-    iminputjson     = opts.iminputjson
-
     do_selfcal      = opts.do_selfcal
     do_imaging      = opts.do_imaging
     dodelmaskimages = opts.dodelmaskimages    
-
-
-
 
 
 
@@ -166,7 +176,7 @@ def main():
     # =========================================
 
 
-    print('\n Use home dir: ',homedir)
+    print('\n Use home dir: ',wdir)
     print('\n Use MS file: ',MSFILE,'\n')
     #
     #
@@ -198,13 +208,17 @@ def main():
     selfcal_information  = {}
 
     # Get the source_name
-    source_name        = list(INFMS.ms_source_info(MSFILE).keys())[0]
+    source_name        = list(INFMS.ms_source_info(ms_name).keys())[0]
 
+
+    sys.exit(-1)
+
+    
     # === define the default imaging parameter
     #
     # Get the default imaging parameter 
     #
-    default_imaging_para = C2GC.get_json(iminputjson,homedir+'GC2/')['IMAGING_DEFAULT']['wsclean_para']
+    default_imaging_para = C2GC.get_json(iminputjson,wdir+'GC2/')['IMAGING_DEFAULT']['wsclean_para']
     #
     # set some specific parameter from the input
     # 
