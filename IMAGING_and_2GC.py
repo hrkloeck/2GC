@@ -491,7 +491,7 @@ def main():
 
         # add additional inputs from user
         #
-        additional_imaging_para = C2GC.get_json(iminputjson,wdir+'GC2/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
+        additional_imaging_para = C2GC.get_json(iminputjson,wdir+'2GC/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
         #
         if len(additional_imaging_para) > 0:
                 f_additional_wsclean_para = C2GC.concat_dic(additional_wsclean_para,additional_imaging_para)
@@ -506,24 +506,24 @@ def main():
 
         # produce the final image
         #
-        images = C2GC.make_image(MSFILE,outname,homedir,final_set_of_wsclean_para)
+        images = C2GC.make_image(MSFILE,outname,wdir,final_set_of_wsclean_para)
 
         # get stats 
         #
-        get_residual_files = sorted(glob.glob(homedir+outname+'*'+'residual.fits'),key=os.path.getmtime)
+        get_residual_files = sorted(glob.glob(wdir+outname+'*'+'residual.fits'),key=os.path.getmtime)
         selfcal_information['FINALIMAGES'] = {}
         #
         for rsidat in get_residual_files:
-            resi_file_name = rsidat.replace(homedir,'')
-            file_key       = 'Stats_'+rsidat.replace(homedir,'').replace(outname,'').replace('residual.fits','').replace('-','')
-            selfcal_information['FINALIMAGES'][file_key] = C2GC.get_imagestats(resi_file_name,homedir)
+            resi_file_name = rsidat.replace(wdir,'')
+            file_key       = 'Stats_'+rsidat.replace(wdir,'').replace(outname,'').replace('residual.fits','').replace('-','')
+            selfcal_information['FINALIMAGES'][file_key] = C2GC.get_imagestats(resi_file_name,wdir)
 
         # run cataloger and source finding
         #
         if chan_out > 1:
             final_image    = outname+'-MFS-image.fits'
-        homedir,pybdsf_dir,pybdsf_log = C2GC.cataloging_fits(final_image,homedir)
-        pybdsf_info = C2GC.get_info_from_pybdsflog(pybdsf_log,pybdsf_dir+'/',homedir+'/')
+        homedir,pybdsf_dir,pybdsf_log = C2GC.cataloging_fits(final_image,wdir)
+        pybdsf_info = C2GC.get_info_from_pybdsflog(pybdsf_log,pybdsf_dir+'/',wdir+'/')
 
         # collect information on the model, the noise etc.
         #
@@ -532,10 +532,10 @@ def main():
         # need to clean up the images
         #
         scdir = 'FINAL_'+source_name+'_IMAGES'+fim_imagedir_ext+'/'
-        os.mkdir(homedir+scdir)
-        get_files = sorted(glob.glob(homedir+outname+'*'),key=os.path.getmtime)
+        os.mkdir(wdir+scdir)
+        get_files = sorted(glob.glob(wdir+outname+'*'),key=os.path.getmtime)
         for im in get_files:
-            shutil.move(im,homedir+scdir)
+            shutil.move(im,wdir+scdir)
 
 
     # ============================================================================================================
@@ -544,7 +544,7 @@ def main():
     #
     self_cal_info = 'FINAL_IMAGE_'+source_name+'_SELFCALINFO'+fim_imagedir_ext+'.json'
     if len(self_cal_info) > 0:
-        C2GC.save_to_json(selfcal_information,self_cal_info,homedir)
+        C2GC.save_to_json(selfcal_information,self_cal_info,wdir)
 
     print('finish !')
 
