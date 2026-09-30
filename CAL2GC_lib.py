@@ -284,11 +284,11 @@ def concat_dic(dic_a,dic_b):
     return c_dic
 
 
-def delmodel(MSFILE,homedir):
+def delmodel(MSFILE,datadir):
     """
     use the casa task do delete the model data
     """
-    msfile = homedir + MSFILE
+    msfile = datadir + MSFILE
     casatasks.delmod(vis=msfile,otf=True,scr=False)
 
     return []
@@ -422,28 +422,28 @@ def DOESNOTWORK_plot_calsolutions(caltab,homedir,caltype,figurename):
         casatasks.plotcal(caltable=caltable,antenna='0',axis='time',yaxis='amp',interation='antenna',subplot=231,dpi=dpi,showgui=False,plotfile=plotfigfile)
 
 
-def plot_check_cal(MSFILE,homedir,plotype,figurename):
+def plot_check_cal(MSFILE,wdir,plotype,figurename):
     """
     """
     # plot mean of the corrected data and the model
-    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared mean --dir '+homedir+' --suffix '+figurename+' '+homedir+MSFILE
+    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared mean --dir '+wdir+' --suffix '+figurename+' '+MSFILE
     os.system(shadeit)
     # plot the std 
-    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared std --dir '+homedir+' --suffix '+figurename+' '+homedir+MSFILE
+    shadeit = 'shadems --corr XX,YY --iter-corr -x ANTENNA1 -y ANTENNA2 --cmap coolwarm --aaxis CORRECTED_DATA-MODEL_DATA:'+plotype+' --ared std --dir '+wdir+' --suffix '+figurename+' '+MSFILE
     os.system(shadeit)
 
-    get_files = sorted(glob.glob(homedir+'*'+figurename+'*.png'),key=os.path.getmtime)
+    get_files = sorted(glob.glob(wdir+'*'+figurename+'*.png'),key=os.path.getmtime)
 
     return get_files
 
 
-def get_imagestats(imagename,homedir):
+def get_imagestats(imagename,wdir):
     """
     provide stats information of the image 
     """
     from astropy.io import fits
     
-    imageandpath = homedir+imagename
+    imageandpath = wdir+imagename
     
     # open the fits file
     #
