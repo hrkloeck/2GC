@@ -503,10 +503,9 @@ def main():
         final_set_of_wsclean_para = C2GC.concat_dic(full_default_wsclean_para,f_additional_wsclean_para)
         # ===
 
-
         # produce the final image
         #
-        images = C2GC.make_image(MSFILE,outname,wdir,final_set_of_wsclean_para)
+        images = C2GC.make_image(ms_name,outname,wdir,final_set_of_wsclean_para)
 
         # get stats 
         #
