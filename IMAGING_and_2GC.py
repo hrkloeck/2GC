@@ -210,15 +210,12 @@ def main():
     # Get the source_name
     source_name        = list(INFMS.ms_source_info(ms_name).keys())[0]
 
-
-    sys.exit(-1)
-
     
     # === define the default imaging parameter
     #
     # Get the default imaging parameter 
     #
-    default_imaging_para = C2GC.get_json(iminputjson,wdir+'GC2/')['IMAGING_DEFAULT']['wsclean_para']
+    default_imaging_para = C2GC.get_json(iminputjson,wdir+'2GC/')['IMAGING_DEFAULT']['wsclean_para']
     #
     # set some specific parameter from the input
     # 
@@ -238,7 +235,7 @@ def main():
 
     # add additional inputs from user
     #
-    additional_imaging_para = C2GC.get_json(iminputjson,homedir+'GC2/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
+    additional_imaging_para = C2GC.get_json(iminputjson,wdir+'2GC/')['ADD_WSCLEAN_COMMAND']['wsclean_para']
     #
     if len(additional_imaging_para) > 0:
         full_default_wsclean_para = C2GC.concat_dic(default_wsclean_para,additional_imaging_para)
