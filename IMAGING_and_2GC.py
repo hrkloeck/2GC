@@ -504,7 +504,7 @@ def main():
 
         # produce the final image
         #
-        #images = C2GC.make_image(ms_name,outname,wdir,final_set_of_wsclean_para)
+        images = C2GC.make_image(ms_name,outname,wdir,final_set_of_wsclean_para)
 
         # get stats 
         #
@@ -522,8 +522,6 @@ def main():
             final_image    = outname+'-MFS-image.fits'
             
         wdir,pybdsf_dir,pybdsf_log = C2GC.cataloging_fits(final_image,wdir)
-
-        print(wdir,pybdsf_dir,pybdsf_log)
         
         pybdsf_info = C2GC.get_info_from_pybdsflog(pybdsf_log,'',wdir+'/')
 
@@ -546,7 +544,7 @@ def main():
     #
     self_cal_info = 'FINAL_IMAGE_'+source_name+'_SELFCALINFO'+fim_imagedir_ext+'.json'
     if len(self_cal_info) > 0:
-        C2GC.save_to_json(selfcal_information,self_cal_info,wdir+pybdsf_dir)
+        C2GC.save_to_json(selfcal_information,self_cal_info,wdir+scdir)
 
     print('finish !')
 
