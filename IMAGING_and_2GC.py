@@ -254,7 +254,7 @@ def main():
         #
         # Get the default selcal parameter from json file 
         #
-        default_selfcal_para = C2GC.get_json(iminputjson,wdir+'GC2/')['SELFCAL_PARAMETER'] 
+        default_selfcal_para = C2GC.get_json(iminputjson,'GC2/')['SELFCAL_PARAMETER'] 
         #
         selfcal_modes        = default_selfcal_para['selfcal_modes']
         selfcal_solint       = default_selfcal_para['selfcal_solint']
@@ -311,7 +311,7 @@ def main():
 
             # add additional inputs from user
             #
-            additional_sc_imaging_para = C2GC.get_json(iminputjson,wdir+'GC2/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
+            additional_sc_imaging_para = C2GC.get_json(iminputjson,'2GC/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
             #
             if len(additional_sc_imaging_para) > 0:
                 f_additional_wsclean_para_ma = C2GC.concat_dic(additional_wsclean_para_ma,additional_sc_imaging_para)
@@ -359,7 +359,7 @@ def main():
 
             # add additional inputs from user
             #
-            additional_sc_imaging_para = C2GC.get_json(iminputjson,wdir+'GC2/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
+            additional_sc_imaging_para = C2GC.get_json(iminputjson,'2GC/')['ADD_SELFCAL_WSCLEAN_COMMAND']['wsclean_para']
             #
             if len(additional_sc_imaging_para) > 0:
                 f_additional_wsclean_para_sc = C2GC.concat_dic(additional_wsclean_para_sc,additional_sc_imaging_para)
