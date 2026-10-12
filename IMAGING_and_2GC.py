@@ -254,7 +254,7 @@ def main():
         #
         # Get the default selcal parameter from json file 
         #
-        default_selfcal_para = C2GC.get_json(iminputjson,'GC2/')['SELFCAL_PARAMETER'] 
+        default_selfcal_para = C2GC.get_json(iminputjson,'2GC/')['SELFCAL_PARAMETER'] 
         #
         selfcal_modes        = default_selfcal_para['selfcal_modes']
         selfcal_solint       = default_selfcal_para['selfcal_solint']
