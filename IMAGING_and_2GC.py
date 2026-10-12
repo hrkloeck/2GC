@@ -295,7 +295,7 @@ def main():
             #
             additional_wsclean_para_ma = {}
             additional_wsclean_para_ma['-weight briggs']            = str(selfcal_weighting)
-            additional_wsclean_para_ma['-threshold']                = str(selfcal_threshold)
+            additional_wsclean_para_ma['-abs-threshold']                = str(selfcal_threshold)
             additional_wsclean_para_ma['-data-column']              = selfcal_data[sc]
             additional_wsclean_para_ma['-niter']                    = str(selfcal_niter[sc])
             additional_wsclean_para_ma['-gain']                     = str(selfcal_gain[sc])
@@ -346,7 +346,7 @@ def main():
             #
             additional_wsclean_para_sc = {} 
             additional_wsclean_para_sc['-weight briggs']            = str(selfcal_weighting)
-            additional_wsclean_para_sc['-threshold']                = str(selfcal_threshold)
+            additional_wsclean_para_sc['-abs-threshold']                = str(selfcal_threshold)
             additional_wsclean_para_sc['-data-column']              = selfcal_data[sc]
             additional_wsclean_para_sc['-niter']                    = str(selfcal_niter[sc])
             additional_wsclean_para_sc['-mgain']                    = str(selfcal_mgain[sc])
@@ -481,7 +481,7 @@ def main():
         additional_wsclean_para['-weight briggs']            = str(weighting)
         additional_wsclean_para['-niter']                    = str(imniter)
         additional_wsclean_para['-gain']                     = str(imagegain)
-        additional_wsclean_para['-threshold']                = str(imthreshold)
+        additional_wsclean_para['-abs-threshold']                = str(imthreshold)
         additional_wsclean_para['-no-update-model-required'] = ''
         if chan_out > 1:
             additional_wsclean_para['-join-channels']        = ''
