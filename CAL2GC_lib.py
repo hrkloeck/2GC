@@ -120,8 +120,8 @@ def make_region_file(imagename,homedir=''):
     filename       = homedir + imagename
     sfinding_dir   = homedir + imagename.replace('.fits','').replace('.FITS','')
     pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
-    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py mask ' + filename + ' -o fits:srl kvis --plot'
-
+    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py ' + filename + ' -o fits:srl kvis --mask --plot'
+    
     # start the source finding stuff from Jonah
     # using the mask setting
     #
@@ -238,15 +238,12 @@ def make_image(MSFILE,outname,homedir,wsc_para):
     combines the wsclean parameter and start the imaging
     """
 
-    #full_set_of_wsclean_para = concat_dic(get_wsclean_para(),wsc_para)
-
     wsclean_command = 'wsclean '
+    para_keys       = wsc_para.keys()
 
-    #para_keys = full_set_of_wsclean_para.keys()
-    para_keys = wsc_para.keys()
-
+    # add all the imaging option to string
+    #
     for k in para_keys:
-        #wsclean_command += ' '+ k + ' ' + str(full_set_of_wsclean_para[k])
         wsclean_command += ' '+ k + ' ' + str(wsc_para[k])
 
     wsclean_command += ' -name '+homedir+outname
@@ -342,7 +339,7 @@ def apply_calibration(MSFILE,MSOUTPUT,homedir,fieldid,gaintable=[],interp=[]):
 
 def masking(MSFILE,outname,homedir,wsclean_para_ma,sc_marker=0,dodelmaskimages=False):
     """
-    generates a fits image mask
+    generates a mask for imaging
     """
 
     # Generate an image via (wsclean)
@@ -352,22 +349,23 @@ def masking(MSFILE,outname,homedir,wsclean_para_ma,sc_marker=0,dodelmaskimages=F
     if len(image_files) > 5:
         for f in image_files:
             if f == homedir+outname+'-MFS-image.fits':
-                # indicate image to be used for source finiding
+                # indicate image to be used for source finding
                 MFS_image      = image_files[image_files.index(homedir+outname+'-MFS-image.fits')].replace(homedir,'')
     else:
         MFS_image      = image_files[image_files.index(homedir+outname+'-image.fits')].replace(homedir,'')
 
     # source finding useing Jonah's software and setting (pybdsf)
+    #
     pybdsf_dir,region_file,tot_flux_model,std_resi  = make_region_file(MFS_image,homedir)
 
     # copy region file 
     #
     shutil.copy(homedir+pybdsf_dir+'/'+region_file,homedir)
 
-
-    # generate FITS image mask
+    # generate image mask in FITS format
     #
-    delete_ms_images = True
+    delete_ms_images = True   # clean up the work
+    #
     fitsoutput_mask  = 'SC'+str(sc_marker)+'_MASK'
     mask_fits_file   = make_mask(MFS_image,region_file,fitsoutput_mask,sc_marker,homedir,delete_ms_images)
 
