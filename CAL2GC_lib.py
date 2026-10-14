@@ -165,11 +165,11 @@ def cataloging_fits(imagename,homedir=''):
     #
     filename       = homedir + imagename
     pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
-    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py ' + filename + ' -o fits:srl ds9 --plot'
 
     # start the source finding stuff from Jonah
     # using the mask setting
     #
+    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py ' + filename + ' -o fits:srl ds9 --plot'
     os.system(source_finding)
 
     # pybdsf log file

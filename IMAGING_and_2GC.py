@@ -411,7 +411,7 @@ def main():
             
             CALTAB  = 'SC'+str(sc_marker)+'_CALTAB_'+selfcal_modes[sc]
 
-            addgaintable, addinterp = C2GC.calib_data(MSFILE,CALTAB,wdir,selfcal_solint[sc],selfcal_modes[sc],selfcal_refant,selfcal_uvrange,selfcal_interp[sc],addgaintable,addinterp)
+            addgaintable, addinterp = C2GC.calib_data(MSFILE,CALTAB,ddir,selfcal_solint[sc],selfcal_modes[sc],selfcal_refant,selfcal_uvrange,selfcal_interp[sc],addgaintable,addinterp)
 
             # store calibrations to account for
             # the individual calibration steps 
