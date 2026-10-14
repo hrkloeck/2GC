@@ -114,18 +114,25 @@ def make_region_file(imagename,homedir=''):
     """
     uses pybdsf and Jonah's source finding with mask setup
     """
-
+    
     # set settings
     #
     filename       = homedir + imagename
     sfinding_dir   = homedir + imagename.replace('.fits','').replace('.FITS','')
     pybdsf_dir     = imagename.replace('.fits','').replace('.FITS','')+'_pybdsf'
-    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py ' + filename + ' -o fits:srl kvis --mask --plot'
+
     
     # start the source finding stuff from Jonah
     # using the mask setting
+    # and crtf mask file should be produced
     #
+    source_finding = python_def + ' ' + homedir + 'Image-processing/sourcefinding.py ' + filename + ' -o fits:srl kvis --mask --plot '
     os.system(source_finding)
+
+    # Jonah's Imaging does not copy the logfile into the directory so do that myself
+    #
+    if os.path.isfile(homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log') == False:
+            shutil.move(homedir+imagename+'.pybdsf.log',homedir+pybdsf_dir+'/'+imagename+'.pybdsf.log')
 
     # optain information of the total flux density of the model
     #
