@@ -295,7 +295,7 @@ def main():
             #
             additional_wsclean_para_ma = {}
             additional_wsclean_para_ma['-weight briggs']            = str(selfcal_weighting)
-            additional_wsclean_para_ma['-abs-threshold']                = str(selfcal_threshold)
+            additional_wsclean_para_ma['-abs-threshold']            = str(selfcal_threshold)
             additional_wsclean_para_ma['-data-column']              = selfcal_data[sc]
             additional_wsclean_para_ma['-niter']                    = str(selfcal_niter[sc])
             additional_wsclean_para_ma['-gain']                     = str(selfcal_gain[sc])
@@ -346,7 +346,7 @@ def main():
             #
             additional_wsclean_para_sc = {} 
             additional_wsclean_para_sc['-weight briggs']            = str(selfcal_weighting)
-            additional_wsclean_para_sc['-abs-threshold']                = str(selfcal_threshold)
+            additional_wsclean_para_sc['-abs-threshold']            = str(selfcal_threshold)
             additional_wsclean_para_sc['-data-column']              = selfcal_data[sc]
             additional_wsclean_para_sc['-niter']                    = str(selfcal_niter[sc])
             additional_wsclean_para_sc['-mgain']                    = str(selfcal_mgain[sc])
@@ -372,29 +372,46 @@ def main():
 
             # ===
 
-
             # Add model into the MS file
             #
             outname        = 'MODIM'+str(sc_marker)
             images         = C2GC.make_image(ms_name,outname,wdir,full_set_of_wsclean_para_sc)
 
-            # determine the stats of the model subtracted image
+
+            # Check if a MFS file has been produced
             #
-            if chan_out > 1:
-                stats_image    = outname+'-MFS-residual.fits'
+            if os.path.isfile(wdir+outname+'-MFS-residual.fits') == False:
+                stats_images  = glob.glob(wdir+outname+'*-residual.fits')
+                for fn in stats_images:
+                    filename_number = C2GC.get_wsclean_file_number(fn)
+                    if filename_number.counts(str(int(chan_out/2))) > 0:
+                        stats_image = fn.replace(wdir,'')
             else:
-                stats_image    = outname+'-residual.fits'
+                stats_image  = outname+'-MFS-residual.fits'
 
-            selfcal_information['SC'+str(sc)]['Stats'] = C2GC.get_imagestats(stats_image,wdir)
+            print('resi',stats_image)
+                
+            # store info of the spwd image
+            selfcal_information['SC'+str(sc)]['Stats_image'] = stats_image
+            selfcal_information['SC'+str(sc)]['Stats']       = C2GC.get_imagestats(stats_image,wdir)
 
-            # provide the entire flux density of the model
+
+            # Check if a MFS file has been produced
             #
-            if chan_out > 1:
-                stats_image    = outname+'-MFS-model.fits'
+            if os.path.isfile(wdir+outname+'-MFS-model.fits') == False:
+                stats_images  = glob.glob(wdir+outname+'*-model.fits')
+                for fn in stats_images:
+                    filename_number = C2GC.get_wsclean_file_number(fn)
+                    if filename_number.counts(str(int(chan_out/2))) > 0:
+                        stats_image = fn.replace(wdir,'')
             else:
-                stats_image    = outname+'-model.fits'
+                stats_image  = outname+'-MFS-model.fits'
 
-            selfcal_information['SC'+str(sc)]['Model'] = [C2GC.sum_imageflux(stats_image,wdir,threshold=0)]
+            print('model',stats_image)
+
+                        
+            selfcal_information['SC'+str(sc)]['Model_image'] = stats_image
+            selfcal_information['SC'+str(sc)]['Model']       = [C2GC.sum_imageflux(stats_image,wdir,threshold=0)]
 
             # need to clean up the images
             #
@@ -481,7 +498,7 @@ def main():
         additional_wsclean_para['-weight briggs']            = str(weighting)
         additional_wsclean_para['-niter']                    = str(imniter)
         additional_wsclean_para['-gain']                     = str(imagegain)
-        additional_wsclean_para['-abs-threshold']                = str(imthreshold)
+        additional_wsclean_para['-abs-threshold']            = str(imthreshold)
         additional_wsclean_para['-no-update-model-required'] = ''
         if chan_out > 1:
             additional_wsclean_para['-join-channels']        = ''

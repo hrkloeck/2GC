@@ -544,3 +544,12 @@ def make_self_calinput_check(selfcal_modes,selfcal_solint,selfcal_interp,selfcal
         sys.exit(-1)
 
 
+def get_wsclean_file_number(filename,defcharacter='-'):
+    """
+    extract the file number out of the 
+    """
+
+    lfind = filename.find(defcharacter)
+    rfind = filename.rfind(defcharacter)
+
+    return filename[lfind+1:rfind]
