@@ -384,7 +384,7 @@ def main():
                 stats_images  = glob.glob(wdir+outname+'*-residual.fits')
                 for fn in stats_images:
                     filename_number = C2GC.get_wsclean_file_number(fn)
-                    if filename_number.counts(str(int(chan_out/2))) > 0:
+                    if filename_number.count(str(int(chan_out/2))) > 0:
                         stats_image = fn.replace(wdir,'')
             else:
                 stats_image  = outname+'-MFS-residual.fits'
@@ -402,7 +402,7 @@ def main():
                 stats_images  = glob.glob(wdir+outname+'*-model.fits')
                 for fn in stats_images:
                     filename_number = C2GC.get_wsclean_file_number(fn)
-                    if filename_number.counts(str(int(chan_out/2))) > 0:
+                    if filename_number.count(str(int(chan_out/2))) > 0:
                         stats_image = fn.replace(wdir,'')
             else:
                 stats_image  = outname+'-MFS-model.fits'
