@@ -112,6 +112,9 @@ def main():
     parser.add_option('--DOSELFCAL', dest='do_selfcal', action='store_true', default=False,
                       help='switch to include 2GC self-calibration. [default no self-calibration]')
 
+    parser.add_option('--DOSELFCSHADEMS', dest='do_shadems_plt', action='store_true', default=False,
+                      help='switch to generate 2GC self-calibration plots via shadems. [default no plot]')
+
     parser.add_option('--DOIMAGING', dest='do_imaging', action='store_false', default=True,
                       help='switch to exclude final imaging. [default do final imaging]')
 
@@ -160,7 +163,8 @@ def main():
     do_imaging      = opts.do_imaging
     dodelmaskimages = opts.dodelmaskimages    
 
-
+    do_shadems_plt  = opts.do_shadems_plt
+    
 
     # =========================================
     # paramter pre-definition
@@ -438,28 +442,29 @@ def main():
             selfcal_information['SC'+str(sc)]['calip_inter']   = [copy.copy(addgaintable),copy.copy(addinterp)]
 
 
-            # produce bsl shadems images
-            #    
-            if selfcal_modes[sc] == 'p':
-                figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
-                plotype = 'phase'
-                pltfiles = C2GC.plot_check_cal(ms_name,wdir,plotype,figurename)
-                #
-                # move the images
-                for im in pltfiles:
-                    shutil.move(im,wdir+scdir)
+            if do_shadems_plt:
+                # produce bsl shadems images
+                #    
+                if selfcal_modes[sc] == 'p':
+                    figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
+                    plotype = 'phase'
+                    pltfiles = C2GC.plot_check_cal(ms_name,wdir,plotype,figurename)
+                    #
+                    # move the images
+                    for im in pltfiles:
+                        shutil.move(im,wdir+scdir)
 
-            if selfcal_modes[sc] == 'ap':
-                figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
-                plotype = 'phase'
-                pltfiles = C2GC.plot_check_cal(ms_name,wdir,plotype,figurename)
-                #
-                figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
-                plotype = 'amp'
-                pltfiles = C2GC.plot_check_cal(ms_name,wdir,plotype,figurename)
-                # move the images
-                for im in pltfiles:
-                    shutil.move(im,wdir+scdir)
+                        if selfcal_modes[sc] == 'ap':
+                            figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
+                            plotype = 'phase'
+                            pltfiles = C2GC.plot_check_cal(ms_name,wdir,plotype,figurename)
+                            #
+                            figurename = 'SC'+str(sc_marker)+'_CALCHECK_'+selfcal_modes[sc]
+                            plotype = 'amp'
+                            pltfiles = C2GC.plot_check_cal(ms_name,wdir,plotype,figurename)
+                            # move the images
+                            for im in pltfiles:
+                                shutil.move(im,wdir+scdir)
 
 
             # being conservative delete the model in the MS dataset
